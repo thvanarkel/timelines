@@ -1,0 +1,42 @@
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: auto;
+  /* max-width: 38rem; */
+  /* padding: 0rem 2rem 2rem 2rem; */
+}
+
+$title-bar-height: 1.8rem;
+
+.titlebar {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: $title-bar-height;
+  margin-left: 2rem;
+  text-align: center;
+  font-size: 12px;
+  -webkit-app-region: drag;
+  user-select: none;
+  color: rgb(108, 122, 137);
+}
+
+.contents {
+  @extend .row;
+  @extend .d-flex;
+  @extend .align-items-stretch;
+  height: 100vh;
+}
+
+.sidebar {
+  // @extend .col-md-4;
+  background-color: $gray-200;
+  width: 300px;
+}
+
+.timeline-view {
+  
+}
+
+
