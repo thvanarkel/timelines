@@ -572,7 +572,7 @@ pre code {
   margin-left: auto;
 }
 
-.row, .contents {
+.row {
   display: flex;
   flex-wrap: wrap;
   margin-right: -15px;
@@ -6334,7 +6334,7 @@ button.bg-dark:focus {
   align-items: baseline !important;
 }
 
-.align-items-stretch, .contents {
+.align-items-stretch {
   align-items: stretch !important;
 }
 
@@ -9682,6 +9682,47 @@ body {
 .sidebar {
   background-color: #e9ecef;
   width: 300px;
+  min-width: 300px;
+  padding-top: 50px;
+}
+.sidebar li {
+  display: flex;
+  align-items: center;
+}
+.sidebar li p {
+  margin-bottom: 0;
+  margin-left: 5px;
+}
+.sidebar .indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+}
+.sidebar .indicator.red {
+  background-color: #ff9999;
+  border: 1px solid red;
+}
+.sidebar .indicator.blue {
+  background-color: #9b99ff;
+  border: 1px solid #0400ff;
+}
+.sidebar .indicator.yellow {
+  background-color: #fff599;
+  border: 1px solid #ffe600;
+}
+
+.timeline-view {
+  width: calc(100vw - 300px);
+  overflow: auto;
+}
+.timeline-view line {
+  stroke: #343a40;
+  stroke-width: 0.3;
+}
+
+.bubble {
+  height: 20px;
+  rx: 6px;
 }
 
 /*# sourceMappingURL=core.css.map */
