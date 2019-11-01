@@ -67,14 +67,14 @@ $sidebar-width: 300px;
 }
 
 
-$bubble-height: 20px;
+$bubble-height: 10px;
 
 .timeline-view {
   width: calc(100vw - #{$sidebar-width});
   overflow: auto;
 
   line {
-    stroke: $gray-800;
+    // stroke: $gray-800;
     stroke-width: 0.3;
   }
 }
@@ -85,4 +85,44 @@ $bubble-height: 20px;
   // width: 100px;
   // fill: $gray-200;
   rx: 6px;
+  stroke-linecap: round;
+  stroke-width: 10px !important;
+}
+
+.axis path,
+.axis line {
+  stroke: black;
+}
+
+.axis text {
+  fill: black;
+}
+
+.area {
+  fill: steelblue;
+  clip-path: url(#clip);
+}
+
+.zoom {
+  cursor: move;
+  fill: none;
+  pointer-events: all;
+}
+
+.item {
+  height: 20px;
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.name {
+  margin: 0;
+  font-family: -apple-system, Helvetica, Arial, sans-serif;
+  margin-left: 20px;
 }
