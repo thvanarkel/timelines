@@ -1,12 +1,22 @@
+// @import "../../node_modules/bulma/sass/utilities/_all.sass";
+// @import "../../node_modules/bulma/sass/base/_all.sass";
+// @import "../../node_modules/bulma/sass/grid/columns.sass";
+// @import "../../node_modules/bulma/sass/elements/icon.sass";
+// @import "../../node_modules/bulma/sass/elements/tag.sass";
+// @import "../../node_modules/bulma/sass/elements/button.sass";
+// @import "../../node_modules/bulma/sass/elements/other.sass";
+// // @import "../../node_modules/bulma/sass/form/shared.sass";
+// // @import "../../node_modules/bulma/sass/form/tools.sass";
+// @import "../../node_modules/bulma/sass/form/_all.sass";
+
 @import "../../node_modules/bulma/sass/utilities/_all.sass";
-@import "../../node_modules/bulma/sass/base/helpers.sass";
-@import "../../node_modules/bulma/sass/grid/columns.sass";
-// @import "../../node_modules/bulma/sass/elements/_all.sass";
-@import "../../node_modules/bulma/sass/elements/tag.sass";
-@import "../../node_modules/bulma/sass/elements/button.sass";
-@import "../../node_modules/bulma/sass/elements/other.sass";
-@import "../../node_modules/bulma/sass/form/shared.sass";
-@import "../../node_modules/bulma/sass/form/tools.sass";
+@import "../../node_modules/bulma/sass/base/_all.sass";
+@import "../../node_modules/bulma/sass/components/_all.sass";
+@import "../../node_modules/bulma/sass/elements/_all.sass";
+@import "../../node_modules/bulma/sass/form/_all.sass";
+@import "../../node_modules/bulma/sass/grid/_all.sass";
+@import "../../node_modules/bulma/sass/layout/_all.sass";
+
 
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -15,27 +25,28 @@ body {
   /* padding: 0rem 2rem 2rem 2rem; */
 }
 
-$title-bar-height: 1.8rem;
+// $title-bar-height: 1.8rem;
 
-.titlebar {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  height: $title-bar-height;
-  margin-left: 2rem;
-  text-align: center;
-  font-size: 12px;
-  -webkit-app-region: drag;
-  user-select: none;
-  color: rgb(108, 122, 137);
-}
+// .titlebar {
+//   display: flex;
+//   justify-content: center;
+//   align-items: flex-end;
+//   height: $title-bar-height;
+//   margin-left: 2rem;
+//   text-align: center;
+//   font-size: 12px;
+//   -webkit-app-region: drag;
+//   user-select: none;
+//   color: rgb(108, 122, 137);
+// }
 
 .contents {
   // @extend .row;
   // @extend .d-flex;
   // @extend .align-items-stretch;
-  display: flex;
+  @extend .columns;
   height: 100vh;
+  width: 100vw;
 }
 
 $sidebar-width: 300px;
@@ -44,9 +55,12 @@ $sidebar-width: 300px;
   // @extend .col-md-4;
   // position: fixed;
   @extend .has-background-white-ter;
-  width: $sidebar-width;
+  @extend .column;
+  @extend .is-one-fifth;
+  // width: $sidebar-width;
   min-width: $sidebar-width;
   padding-top: 50px;
+  padding-left: 25px;
   li {
     display: flex;
     align-items: center;
@@ -96,25 +110,44 @@ $sidebar-width: 300px;
   }
 }
 
+.filters {
+  @extend .field;
+}
+
 .tags:not(:last-child) {
     margin-bottom: 0rem;
 }
 
-.word-filters {
-  @extend .tags;
-  .word-filter {
-    @extend .tag;
-    @extend .is-rounded;
-    @extend .is-info;
+.control {
+  .icon {
+    cursor: pointer;
+    pointer-events: all !important;
   }
 }
+
+.filters {
+  @extend .field;
+  margin-top: 20px;
+  .word-filters {
+    @extend .tags;
+    margin-top: 5px;
+    .word-filter {
+      @extend .tag;
+      @extend .is-rounded;
+      @extend .is-info;
+    }
+  }
+}
+
 
 
 $bubble-height: 10px;
 
 .timeline-view {
-  width: calc(100vw - #{$sidebar-width});
-  overflow: auto;
+  // width: calc(100vw - #{$sidebar-width});
+  // overflow: auto;
+  @extend .column;
+  overflow: hidden;
 
   line {
     // stroke: $gray-800;

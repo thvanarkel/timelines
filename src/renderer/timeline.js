@@ -17,7 +17,7 @@ var inference_types = [
   [11, "Requirements", "olive"],
   [12, "Prioritisation1", "teal"],
   [13, "Prioritisation2", "maroon"],
-	[14, "None", "silver"]
+	[14, "None", "hsl(0, 0%, 96%)"]
 ];
 
 var svg = d3.select("svg"),
@@ -254,7 +254,7 @@ function type(d) {
   };
 }
 
-var colours = ["silver", "gray", "red", "orange", "yellow", "green", "brown", "blue", "purple", "gray", "black", "pink", "olive", "teal", "silver"];
+var colours = ["silver", "gray", "red", "orange", "yellow", "green", "brown", "blue", "purple", "gray", "black", "pink", "olive", "teal", "hsl(0, 0%, 86%)"];
 
 function bubbleLength() {
 
@@ -287,7 +287,7 @@ var determineUtterance = function(participants) {
 }
 
 var numberWords = function(utterance) {
-	const wordLength = 5;
+	const wordLength = 6;
 	return Math.round((utterance.length/wordLength));
 }
 
