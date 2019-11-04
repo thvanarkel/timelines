@@ -1,35 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="core.css">
-  </head>
-  <body >
-    <!-- <div class="titlebar">Timelines</div> -->
-    <div class="contents">
-      <div class="sidebar" style="-webkit-app-region: drag">
-        <ul>
-          <li><div class="indicator red"></div><p>Induction</p></li>
-          <li><div class="indicator blue"></div><p>Deduction</p></li>
-          <li><div class="indicator yellow"></div><p>Abduction</p></li>
-        </ul>
-      </div>
-      <div class="timeline-view">
-        <h1>Test</h1>
-        <div class="wrapper">
-          <svg width="960" height="500"></svg>
 
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="core.css">
+</head>
 
-          <svg class="timeline-single">
-            <!-- <rect class="bubble"></rect> -->
-          </svg>
+<body>
+  <!-- <div class="titlebar">Timelines</div> -->
+  <div class="contents">
+    <div class="sidebar" style="-webkit-app-region: drag">
+      <h6>Coding scheme</h6>
+      <div class="coding-scheme">
+        <div class="coding-group">
+          <div class="label is-small">Basic inferences</div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"></span>
+            <span class="code-label tag">Deduction</span>
+          </div>
+            <div class="code-type tags">
+              <span class="code-indicator tag"></span>
+              <span class="code-label tag">Induction</span>
+            </div>
+            <div class="code-type tags">
+              <span class="code-indicator tag"></span>
+              <span class="code-label tag">Abduction</span>
+            </div>
+        </div>
+        <div class="coding-group">
+          <div class="coding-group-label">Abductive inferences</div>
+            <div class="code-type tags">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Abductive transformation</span>
+            </div>
         </div>
       </div>
-
-
+      <div class="word-filters">
+        <span class="word-filter">power<button class="delete"></button></span>
+        <span class="word-filter">balance<button class="delete"></button></span>
+      </div>
     </div>
-    <script src="./timeline.js"></script>
-  </body>
+    <div class="timeline-view">
+      <h1>Test</h1>
+      <div class="wrapper">
+        <svg width="960" height="500"></svg>
+
+
+        <svg class="timeline-single">
+          <!-- <rect class="bubble"></rect> -->
+        </svg>
+      </div>
+    </div>
+
+
+  </div>
+  <script src="./timeline.js"></script>
+</body>
+
 </html>
