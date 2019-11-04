@@ -1,4 +1,6 @@
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bulma/sass/utilities/_all.sass";
+@import "../../node_modules/bulma/sass/grid/columns.sass";
+@import "../../node_modules/bulma/sass/elements/tag.sass";
 
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -24,8 +26,9 @@ $title-bar-height: 1.8rem;
 
 .contents {
   // @extend .row;
-  @extend .d-flex;
+  // @extend .d-flex;
   // @extend .align-items-stretch;
+  display: flex;
   height: 100vh;
 }
 
@@ -34,7 +37,7 @@ $sidebar-width: 300px;
 .sidebar {
   // @extend .col-md-4;
   // position: fixed;
-  background-color: $gray-200;
+  background-color: $light;
   width: $sidebar-width;
   min-width: $sidebar-width;
   padding-top: 50px;
