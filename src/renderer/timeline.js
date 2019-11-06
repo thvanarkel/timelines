@@ -244,16 +244,6 @@ function zoomed() {
   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }
 
-function type(d) {
-
-  return {
-    d: parseTime(d.d),
-    t: parseInt(d.ts),
-    type: d.type,
-    typeval: parseInt(d.typeval)
-  };
-}
-
 var colours = ["silver", "gray", "red", "orange", "yellow", "green", "brown", "blue", "purple", "gray", "black", "pink", "olive", "teal", "hsl(0, 0%, 86%)"];
 
 function bubbleLength() {
