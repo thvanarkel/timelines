@@ -199,7 +199,7 @@ d3.csv("./data/s1.csv", type).then(function(data) {
   context.append("g")
     .attr("class", "brush")
     .call(brush)
-    .call(brush.move, x.range());
+    .call(brush.move, [30, 100]); // Set initial brush size
 
   svg.append("rect")
     .attr("class", "zoom")
