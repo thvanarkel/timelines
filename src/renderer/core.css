@@ -9598,9 +9598,15 @@ body {
 
 .bubble {
   height: 10px;
-  rx: 6px;
   stroke-linecap: round;
-  stroke-width: 10px !important;
+  stroke-width: 20px !important;
+  rx: 10px;
+  ry: 10px;
+  height: 20px;
+}
+
+.yellow {
+  --gradient-color: yellow;
 }
 
 .axis path,
@@ -9621,6 +9627,7 @@ body {
   cursor: move;
   fill: none;
   pointer-events: all;
+  z-index: -10;
 }
 
 .item {

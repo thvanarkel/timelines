@@ -17,7 +17,7 @@ var inference_types = [
   [11, "Requirements", "olive"],
   [12, "Prioritisation1", "teal"],
   [13, "Prioritisation2", "maroon"],
-	[14, "None", "hsl(0, 0%, 96%)"]
+	[14, "None", "silver"]
 ];
 
 var svg = d3.select("svg"),
@@ -92,7 +92,39 @@ svg.append("defs").append("clipPath")
   .attr("id", "clip")
   .append("rect")
   .attr("width", width)
-  .attr("height", height);
+  .attr("height", height)
+
+var defs = svg.select("defs")
+
+  var gradients = defs.selectAll("linearGradient")
+    .data(inference_types)
+    .enter()
+    .append("linearGradient")
+      .attr("id", function(d, i) {
+        return "gradient-" + d[2];
+      }  )
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x2", "0%")
+      .attr("y2", "100%")
+
+  gradients.append("stop")
+    .attr("class", "stop1")
+    .attr("offset", "0%")
+    .attr("stop-color", "#f7f9ff");
+  gradients.append("stop")
+    .attr("class", "stop2")
+    .attr("offset", "100%")
+    .attr("stop-color", function(d, i) {
+      return d[2];
+    });
+
+svg.append("rect")
+  .attr("class", "zoom")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+  .call(zoom);
 
 var focus = svg.append("g")
   .attr("class", "focus")
@@ -143,26 +175,75 @@ d3.csv("./data/s1.csv", type).then(function(data) {
 		return d.timeEnd
 	});
 
+  var tooltip = d3.select(".wrapper")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("z-index", "100")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var mouseover = function(d) {
+    console.log("mouseover");
+    tooltip
+      .style("opacity", 1)
+    d3.select(this)
+      // .style("stroke", "black")
+      .style("opacity", 1)
+  }
+  var mousemove = function(d) {
+    console.log(d);
+    tooltip
+      .html("Start: " + d.timeStart + " End: " + d.timeEnd + "<br>this cell is: " + d.utterance)
+      .style("left", (d3.mouse(this)[0]) + "px")
+      .style("top", (d3.mouse(this)[1]+80) + "px")
+  }
+  var mouseleave = function(d) {
+    tooltip
+      .style("opacity", 0)
+    d3.select(this)
+      // .style("stroke", "none")
+      // .style("opacity", 0.8)
+  }
+
 	var maxSeconds = (maxTime.getTime() - minTime.getTime()) / 1000;
 	lengthPerSecond = (maxSeconds / width);
 
-  focus.selectAll("line")
+  var prevEnd = parseTime("00:00:00");
+
+  focus.selectAll("rect")
     .data(data)
     .enter()
-		.append("line")
+		.append("rect")
 		.attr("class", "bubble")
-		.attr('x1', function(d, i) {
-			return x(d.timeStart);
+		.attr('x', function(d, i) {
+      if (x(d.timeStart) > x(prevEnd)) {
+			   return x(prevEnd);
+		  }
+      return d.timeStart;
+    })
+		.attr('width', function(d, i) {
+      prevEnd = d.timeEnd;
+			return (x(d.timeEnd) - x(d.timeStart));
 		})
-		.attr('x2', function(d, i) {
-			return x(d.timeEnd);
-		})
+    .attr('y', function(d) {
+      return 10;
+    })
+    .attr('fill', function(d, i) {
+      return "url(#gradient-" + inference_types[d.code][2] + ")"
+      // return "url(#gradient-blue)";
+    })
 		// .attr('width', function(d) {
 		// 	return (d.nWords * lengthPerSecond * 3);
 		// })
-		.attr("stroke", function(d) {
-			return colours[d.code];
-		})
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave)
 
   focus.append("g")
     .attr("class", "axis axis--x")
@@ -187,9 +268,9 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     .attr("y1", 0)
     .attr("y2", height2)
     .attr("stroke", function(d) {
-      return colours[d.code];
+      return inference_types[d.code][2];
     })
-    .attr("stroke-width", 2);
+    .attr("stroke-width", 4)
 
   context.append("g")
     .attr("class", "axis axis--x")
@@ -199,14 +280,11 @@ d3.csv("./data/s1.csv", type).then(function(data) {
   context.append("g")
     .attr("class", "brush")
     .call(brush)
-    .call(brush.move, [30, 100]); // Set initial brush size
+    .call(brush.move, x.range()); // Set initial brush size
 
-  svg.append("rect")
-    .attr("class", "zoom")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    .call(zoom);
+
+
+
 });
 
 function brushed() {
@@ -214,11 +292,11 @@ function brushed() {
   var s = d3.event.selection || x2.range();
   x.domain(s.map(x2.invert, x2));
   focus.selectAll(".bubble")
-    .attr("x1", function(d, i) {
+    .attr("x", function(d, i) {
       return x(d.timeStart);
     })
-		.attr('x2', function(d, i) {
-			return x(d.timeEnd);
+		.attr('width', function(d, i) {
+			return x(d.timeEnd) - x(d.timeStart);
 		})
     // .attr("x2", function(d, i) {
     //   return x(d.timestamp);
@@ -234,12 +312,12 @@ function zoomed() {
   var t = d3.event.transform;
   x.domain(t.rescaleX(x2).domain());
   focus.selectAll(".bubble")
-    .attr("x1", function(d, i) {
+    .attr("x", function(d, i) {
       return x(d.timeStart);
     })
-		.attr('x2', function(d, i) {
-			return x(d.timeEnd);
-		})
+    .attr('width', function(d, i) {
+      return x(d.timeEnd) - x(d.timeStart);
+    })
   focus.select(".axis--x").call(xAxis);
   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }

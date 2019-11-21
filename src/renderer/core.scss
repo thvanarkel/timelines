@@ -159,10 +159,18 @@ $bubble-height: 10px;
 .bubble {
   height: $bubble-height;
   // width: 100px;
-  // fill: $gray-200;
-  rx: 6px;
+  // --gradient-color: red;
+  // fill: url(#gradient-silver);
   stroke-linecap: round;
-  stroke-width: 10px !important;
+  stroke-width: 20px !important;
+  rx: 10px;
+  ry: 10px;
+  height: 20px;
+
+}
+
+.yellow {
+  --gradient-color: yellow;
 }
 
 .axis path,
@@ -183,6 +191,7 @@ $bubble-height: 10px;
   cursor: move;
   fill: none;
   pointer-events: all;
+  z-index: -10;
 }
 
 .item {
