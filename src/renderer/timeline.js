@@ -37,6 +37,8 @@ var svg = d3.select("svg"),
   height = +svg.attr("height") - margin.top - margin.bottom,
   height2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
+var bubbleHeight = 20;
+
 var parseTime = d3.timeParse("%H:%M:%S");
 var formatTime = d3.timeFormat("%H:%M:%S");
 
@@ -160,6 +162,12 @@ key.append("div")
 
 var lengthPerSecond;
 
+var bubbleWidth = function(d, i) {
+  // prevEnd = d.timeEnd;
+  var w = x(d.timeEnd) - x(d.timeStart);
+  return (w < bubbleHeight) ? bubbleHeight : w;
+}
+
 d3.csv("./data/s1.csv", type).then(function(data) {
   // if (error) throw error;
 
@@ -211,6 +219,8 @@ d3.csv("./data/s1.csv", type).then(function(data) {
       // .style("opacity", 0.8)
   }
 
+
+
 	var maxSeconds = (maxTime.getTime() - minTime.getTime()) / 1000;
 	lengthPerSecond = (maxSeconds / width);
 
@@ -228,9 +238,9 @@ d3.csv("./data/s1.csv", type).then(function(data) {
       return d.timeStart;
     })
 		.attr('width', function(d, i) {
-      prevEnd = d.timeEnd;
-			return (x(d.timeEnd) - x(d.timeStart));
+      return bubbleWidth(d, i);
 		})
+    .attr('height', bubbleHeight)
     .attr('y', function(d) {
       return 10;
     })
@@ -296,7 +306,7 @@ function brushed() {
       return x(d.timeStart);
     })
 		.attr('width', function(d, i) {
-			return x(d.timeEnd) - x(d.timeStart);
+			return bubbleWidth(d, i);
 		})
     // .attr("x2", function(d, i) {
     //   return x(d.timestamp);
@@ -316,7 +326,7 @@ function zoomed() {
       return x(d.timeStart);
     })
     .attr('width', function(d, i) {
-      return x(d.timeEnd) - x(d.timeStart);
+      return bubbleWidth(d, i);
     })
   focus.select(".axis--x").call(xAxis);
   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));

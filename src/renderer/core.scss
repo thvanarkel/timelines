@@ -157,7 +157,6 @@ $bubble-height: 10px;
 
 
 .bubble {
-  height: $bubble-height;
   // width: 100px;
   // --gradient-color: red;
   // fill: url(#gradient-silver);
@@ -165,7 +164,6 @@ $bubble-height: 10px;
   stroke-width: 20px !important;
   rx: 10px;
   ry: 10px;
-  height: 20px;
 
 }
 
