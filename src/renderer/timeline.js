@@ -3,21 +3,21 @@
 var d3 = require("d3");
 
 var inference_types = [
-  [0, "Deduction", "silver"],
-  [1, "Induction", "gray"],
-  [2, "Regressive1", "red"],
-  [3, "Regressive2", "orange"],
-  [4, "Effect", "yellow"],
-  [5, "Idea", "green"],
-  [6, "Composition1", "brown"],
-  [7, "Composition2", "blue"],
-  [8, "Manipulative", "purple"],
-  [9, "Transformation", "black"],
-  [10, "Analogical", "pink"],
-  [11, "Requirements", "olive"],
-  [12, "Prioritisation1", "teal"],
-  [13, "Prioritisation2", "maroon"],
-	[14, "None", "silver"]
+  [0, "None", "#f6f6f6"],
+  [1, "Deduction", "silver"],
+  [2, "Induction", "gray"],
+  [3, "Regressive1", "red"],
+  [4, "Regressive2", "orange"],
+  [5, "Effect", "yellow"],
+  [6, "Idea", "green"],
+  [7, "Composition1", "brown"],
+  [8, "Composition2", "blue"],
+  [9, "Manipulative", "purple"],
+  [10, "Transformation", "black"],
+  [11, "Analogical", "pink"],
+  [12, "Requirements", "olive"],
+  [13, "Prioritisation1", "teal"],
+  [14, "Prioritisation2", "maroon"]
 ];
 
 var svg = d3.select("svg"),
@@ -246,11 +246,7 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     })
     .attr('fill', function(d, i) {
       return "url(#gradient-" + inference_types[d.code][2] + ")"
-      // return "url(#gradient-blue)";
     })
-		// .attr('width', function(d) {
-		// 	return (d.nWords * lengthPerSecond * 3);
-		// })
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave)
@@ -259,10 +255,6 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
-
-  focus.append("g")
-  // .attr("class", "axis axis--y")
-  // .call(yAxis);
 
   context.selectAll("line")
     .data(data)
@@ -377,9 +369,9 @@ var timeEnd = function(t, w) {
 var fakeCode = function() {
 	var i = Math.floor(Math.random() * 100);
 	if (i > 70) {
-		return Math.floor(Math.random() * 13);
+		return (Math.floor(Math.random() * 13) + 1);
 	}
-	return 14;
+	return 0;
 }
 
 var parseTime = d3.timeParse("%H:%M:%S");
