@@ -165,12 +165,15 @@ var lengthPerSecond;
 var bubbleWidth = function(d, i) {
   // prevEnd = d.timeEnd;
   var w = x(d.timeEnd) - x(d.timeStart);
+  if (d.next && x(d.next.timeStart) <= x(d.timeEnd)) {
+    w = x(d.next.timeStart) - x(d.timeStart);
+  }
   return (w < bubbleHeight) ? bubbleHeight : w;
 }
 
 d3.csv("./data/s1.csv", type).then(function(data) {
   // if (error) throw error;
-
+  for(var i = 0; i < data.length; i++) { data[i].next = data[i+1]; }
   x.domain([parseTime("0:0:0"), d3.max(data, function(d) {
     return d.timeEnd;
   })])
@@ -223,7 +226,13 @@ d3.csv("./data/s1.csv", type).then(function(data) {
 	var maxSeconds = (maxTime.getTime() - minTime.getTime()) / 1000;
 	lengthPerSecond = (maxSeconds / width);
 
-  var prevEnd = parseTime("00:00:00");
+  focus.append("line")
+    .attr("x1", 0)
+    .attr("x2", x(maxTime))
+    .attr("y1", 20)
+    .attr("y2", 20)
+    .attr("stroke", "black")
+    .attr("stroke-width", 0.1)
 
   focus.selectAll("rect")
     .data(data)
@@ -231,10 +240,7 @@ d3.csv("./data/s1.csv", type).then(function(data) {
 		.append("rect")
 		.attr("class", "bubble")
 		.attr('x', function(d, i) {
-      if (x(d.timeStart) > x(prevEnd)) {
-			   return x(prevEnd);
-		  }
-      return d.timeStart;
+      return x(d.timeStart);
     })
 		.attr('width', function(d, i) {
       return bubbleWidth(d, i);
@@ -249,6 +255,9 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave)
+
+
+
 
   focus.append("g")
     .attr("class", "axis axis--x")
