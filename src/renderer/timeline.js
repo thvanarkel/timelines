@@ -188,11 +188,8 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     .style("opacity", 0)
     .attr("class", "tooltip")
     .style("position", "absolute")
-    .style("background-color", "white")
     .style("border", "solid")
     .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "5px")
     .style("z-index", "100")
 
   // Three function that change the tooltip when user hover / move / leave a cell
@@ -200,6 +197,7 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     console.log("mouseover");
     tooltip
       .style("opacity", 1)
+      .style("z-index", 100)
     d3.select(this)
       // .style("stroke", "black")
       .style("opacity", 1)
@@ -207,13 +205,14 @@ d3.csv("./data/s1.csv", type).then(function(data) {
   var mousemove = function(d) {
     console.log(d);
     tooltip
-      .html("Start: " + d.timeStart + " End: " + d.timeEnd + "<br>this cell is: " + d.utterance)
-      .style("left", (d3.mouse(this)[0]) + "px")
-      .style("top", (d3.mouse(this)[1]+80) + "px")
+      .html("<div class='participant'><p>" + d.name + "</p></div><p><span>Code</span><br>" + inference_types[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
+      .style("left", (d3.mouse(this)[0]+350) + "px")
+      .style("top", (d3.mouse(this)[1]+60) + "px")
   }
   var mouseleave = function(d) {
     tooltip
       .style("opacity", 0)
+      .style("z-index", -1)
     d3.select(this)
       // .style("stroke", "none")
       // .style("opacity", 0.8)
@@ -339,8 +338,16 @@ function type(d) {
     utterance: determineUtterance([d.links, d.rechts])[1],
 		source: determineUtterance([d.links, d.rechts])[0],
 		nWords: numberWords(determineUtterance([d.links, d.rechts])[1]),
-		code: fakeCode()
+		code: fakeCode(),
+    name: firstLetterName(d.firstlettername)
   };
+}
+
+var firstLetterName = function(n) {
+  if (n.endsWith('.')) {
+    n = n.split('.')[0];
+  }
+  return n.toUpperCase();
 }
 
 var determineUtterance = function(participants) {

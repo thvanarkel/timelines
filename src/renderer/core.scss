@@ -155,6 +155,37 @@ $bubble-height: 10px;
   }
 }
 
+.tooltip {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  max-width: 350px;
+  border-radius: 10px;
+  padding: 10px;
+  padding-top: 5px;
+  .participant {
+    position: relative;
+    background-color: #B030B0;
+    min-width: 40px;
+    max-height: 40px;
+    border-radius: 20px;
+    margin-top: 5px;
+    margin-right: 10px;
+    p {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.6em;
+    }
+  }
+  span {
+    color: #DBD8E3;
+    text-transform: uppercase;
+    font-size: 0.7em;
+  }
+}
+
 
 .bubble {
   // width: 100px;
