@@ -2,22 +2,24 @@
 
 var d3 = require("d3");
 
-var inference_types = [
-  [0, "None", "#f6f6f6"],
-  [1, "Deduction", "silver"],
-  [2, "Induction", "gray"],
-  [3, "Regressive1", "red"],
-  [4, "Regressive2", "orange"],
-  [5, "Effect", "yellow"],
-  [6, "Idea", "green"],
-  [7, "Composition1", "brown"],
-  [8, "Composition2", "blue"],
-  [9, "Manipulative", "purple"],
-  [10, "Transformation", "black"],
-  [11, "Analogical", "pink"],
-  [12, "Requirements", "olive"],
-  [13, "Prioritisation1", "teal"],
-  [14, "Prioritisation2", "maroon"]
+var coding_scheme = [
+  [0, "none", "#f6f6f6", ""],
+  [1, "deduction", "silver", ""],
+  [2, "induction", "gray", ""],
+  [3, "regressive1", "red", "frame", "problem"],
+  [4, "regressive2", "orange", "frame", "solution"],
+  [5, "transformation1", "yellow", "frame", "problem"],
+  [6, "transformation2", "green", "frame", "solution"],
+  [7, "proposition1", "brown", "frame", "problem"],
+  [8, "proposition2", "blue", "relation", "solution"],
+  [9, "composition1", "purple", "relation", "problem"],
+  [10, "composition2", "black", "relation", "solution"],
+  [11, "prioritisation1", "pink", "relation", "problem"],
+  [12, "prioritisation2", "olive", "relation", "solution"],
+  [13, "decomposition1", "teal", "element", "problem"],
+  [14, "decomposition2", "maroon", "element", "solution"],
+  [15, "manipulation1", "teal", "element", "problem"],
+  [16, "manipulation2", "maroon", "element", "solution"]
 ];
 
 var svg = d3.select("svg"),
@@ -99,7 +101,7 @@ svg.append("defs").append("clipPath")
 var defs = svg.select("defs")
 
   var gradients = defs.selectAll("linearGradient")
-    .data(inference_types)
+    .data(coding_scheme)
     .enter()
     .append("linearGradient")
       .attr("id", function(d, i) {
@@ -140,7 +142,7 @@ var key = d3.select(".key");
 console.log(key);
 
 var items = key.selectAll("item")
-              .data(inference_types)
+              .data(coding_scheme)
               .enter()
               .append("div")
               .attr("class", "item");
@@ -171,7 +173,7 @@ var bubbleWidth = function(d, i) {
   return (w < bubbleHeight) ? bubbleHeight : w;
 }
 
-d3.csv("./data/s1.csv", type).then(function(data) {
+d3.csv("./data/s8.csv", type).then(function(data) {
   // if (error) throw error;
   for(var i = 0; i < data.length; i++) { data[i].next = data[i+1]; }
   x.domain([parseTime("0:0:0"), d3.max(data, function(d) {
@@ -208,7 +210,7 @@ d3.csv("./data/s1.csv", type).then(function(data) {
   var mousemove = function(d) {
     console.log(d);
     tooltip
-      .html("<div class='participant'><p>" + d.name + "</p></div><p><span>Code</span><br>" + inference_types[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
+      .html("<div class='participant'><p>" + d.name + "</p></div><p><span>Code</span><br>" + coding_scheme[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
       .style("left", (d3.mouse(this)[0]+350) + "px")
       .style("top", (d3.mouse(this)[1]+60) + "px")
   }
@@ -243,14 +245,41 @@ d3.csv("./data/s1.csv", type).then(function(data) {
       return x(d.timeStart);
     })
 		.attr('width', function(d, i) {
-      return bubbleWidth(d, i);
+      return 10;
+      //return bubbleWidth(d, i);
 		})
-    .attr('height', bubbleHeight)
+    .attr('height', function (d) {
+      if (coding_scheme[d.code][3] === "frame") {
+        return 60
+      } else if (coding_scheme[d.code][3] === "relation") {
+        return 40
+      } else if (coding_scheme[d.code][3] === "element") {
+        return 20
+      }
+      return 10
+    })
     .attr('y', function(d) {
+      if (coding_scheme[d.code][4] === "problem") {
+        if (coding_scheme[d.code][3] === "frame") {
+          return (- 60 + 20)
+        } else if (coding_scheme[d.code][3] === "relation") {
+          return (- 40 + 20)
+        } else if (coding_scheme[d.code][3] === "element") {
+          return (- 20 + 20)
+        }
+      }
       return 10;
     })
+    .attr('rx', 5)
+    .attr('ry', 5)
     .attr('fill', function(d, i) {
-      return "url(#gradient-" + inference_types[d.code][2] + ")"
+      //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
+      if (coding_scheme[d.code][4] === "problem") {
+        return "yellow";
+      } else if (coding_scheme[d.code][4] === "solution") {
+        return "blue"
+      }
+      return "silver";
     })
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
@@ -278,7 +307,14 @@ d3.csv("./data/s1.csv", type).then(function(data) {
     .attr("y1", 0)
     .attr("y2", height2)
     .attr("stroke", function(d) {
-      return inference_types[d.code][2];
+      //return coding_scheme[d.code][2];
+      console.log(d.code[4]);
+      if (d.code[4] === "problem") {
+        return "yellow";
+      } else if (d.code[4] === "solution") {
+        return "blue"
+      }
+      return "silver";
     })
     .attr("stroke-width", 4)
 
@@ -306,7 +342,8 @@ function brushed() {
       return x(d.timeStart);
     })
 		.attr('width', function(d, i) {
-			return bubbleWidth(d, i);
+			//return bubbleWidth(d, i);
+      return 10;
 		})
     // .attr("x2", function(d, i) {
     //   return x(d.timestamp);
@@ -326,7 +363,8 @@ function zoomed() {
       return x(d.timeStart);
     })
     .attr('width', function(d, i) {
-      return bubbleWidth(d, i);
+      //return bubbleWidth(d, i);
+      return 10;
     })
   focus.select(".axis--x").call(xAxis);
   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
@@ -347,7 +385,7 @@ function type(d) {
     utterance: determineUtterance([d.links, d.rechts])[1],
 		source: determineUtterance([d.links, d.rechts])[0],
 		nWords: numberWords(determineUtterance([d.links, d.rechts])[1]),
-		code: fakeCode(),
+		code: determineCode(d.code),
     name: firstLetterName(d.firstlettername)
   };
 }
@@ -357,6 +395,17 @@ var firstLetterName = function(n) {
     n = n.split('.')[0];
   }
   return n.toUpperCase();
+}
+
+var determineCode = function(c) {
+  if (c.length > 0) {
+    for (var code of coding_scheme) {
+      if (code[1] === c) {
+        return code[0]
+      }
+    }
+  }
+  return "0";
 }
 
 var determineUtterance = function(participants) {
@@ -380,14 +429,6 @@ var numberWords = function(utterance) {
 var timeEnd = function(t, w) {
 	var newD = new Date(t.getTime() + (w / 4) * 1000);
 	return newD;
-}
-
-var fakeCode = function() {
-	var i = Math.floor(Math.random() * 100);
-	if (i > 70) {
-		return (Math.floor(Math.random() * 13) + 1);
-	}
-	return 0;
 }
 
 var parseTime = d3.timeParse("%H:%M:%S");
