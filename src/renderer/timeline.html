@@ -1,22 +1,104 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="core.css">
-  </head>
-  <body style="-webkit-app-region: drag">
-    <!-- <div class="titlebar">Timelines</div> -->
-    <div class="contents">
-      <div class="sidebar">
 
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World!</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="core.css">
+
+</head>
+
+<body>
+  <!-- <div class="titlebar">Timelines</div> -->
+  <div class="contents">
+    <div class="sidebar" style="-webkit-app-region: drag">
+      <div class="label">Coding scheme</div>
+      <div class="coding-scheme">
+
+        <div class="coding-group">
+          <div class="label is-small">Basic inferences</div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"></span>
+            <span class="code-label tag">Deduction</span>
+          </div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"></span>
+            <span class="code-label tag">Induction</span>
+          </div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"></span>
+            <span class="code-label tag">Abduction</span>
+          </div>
+        </div>
+
+        <div class="coding-group">
+          <div class="coding-group-label">Frame types</div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Regression</span>
+          </div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Transformation</span>
+          </div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Proposition</span>
+          </div>
+        </div>
+
+        <div class="coding-group">
+          <div class="coding-group-label">Relational types</div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Composition</span>
+          </div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Prioritisation</span>
+          </div>
+        </div>
+
+        <div class="coding-group">
+          <div class="coding-group-label">Element types</div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Decomposition</span>
+          </div>
+          <div class="code-type tags">
+            <span class="code-indicator tag"> </span>
+            <span class="code-label tag">Manipulation</span>
+          </div>
+        </div>
       </div>
-      <div class="timeline-view">
-        <h1>Test</h1>
+
+      <div class="filters">
+        <div class="label">Word filters</div>
+        <div class="control has-icons-right">
+          <input class="input is-small" type="text" placeholder="Filter">
+          <span class="icon is-small is-right">
+            <i class="material-icons">add</i>
+          </span>
+        </div>
+        <div class="field">
+          <div class="word-filters">
+            <span class="word-filter">power<button class="delete"></button></span>
+            <span class="word-filter">balance<button class="delete"></button></span>
+          </div>
+        </div>
       </div>
-
-
     </div>
-  </body>
+
+    <div class="timeline-view">
+      <div class="wrapper">
+        <svg id="timeline" width="100%" height="80vh"></svg>
+      </div>
+    </div>
+
+
+  </div>
+  <script src="./timeline.js"></script>
+</body>
+
 </html>

@@ -40,7 +40,7 @@ const createDataWindow = () => {
 
 function main () {
   createMainWindow();
-  createDataWindow();
+  // createDataWindow();
 }
 
 // This method will be called when Electron has finished
