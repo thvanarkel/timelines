@@ -205,13 +205,29 @@ Promise.all([
         .style("opacity", 1)
     }
     var mousemove = function(d) {
-      console.log(d);
+      console.log("mousemove");
+      console.log(d3.event.pageX, d3.event.pageY)
       tooltip
         .html("<div class='participant'><p>" + d.name + "</p></div><p><span>Code</span><br>" + coding_scheme[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
-        .style("left", (d3.mouse(this)[0]+350) + "px")
-        .style("top", (d3.mouse(this)[1]+60) + "px")
+        .style("left", function() {
+          var x = d3.event.pageX;
+          var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+          if (x > (w - tooltip.node().getBoundingClientRect().width)) {
+            return (x - tooltip.node().getBoundingClientRect().width - 10) + "px"
+          }
+          return (x + 10) + "px";
+        })
+        .style("top", function() {
+          var y = d3.event.pageY;
+          var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+          if (y > (h - tooltip.node().getBoundingClientRect().height)) {
+            return (y - tooltip.node().getBoundingClientRect().height - 10) + "px"
+          }
+          return (y + 10) + "px";
+        })
     }
     var mouseleave = function(d) {
+      console.log("mouseleave")
       tooltip
         .style("opacity", 0)
         .style("z-index", -1)
@@ -367,7 +383,7 @@ function brushed() {
     })
 		.attr('width', function(d, i) {
       return bubbleWidth(d);
-		})
+		});
     // .attr("x2", function(d, i) {
     //   return x(d.timestamp);
     // });
