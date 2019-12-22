@@ -87,3 +87,9 @@ typings/
 
 # Electron-Forge
 out/
+
+# exclude everything
+src/renderer/data/*
+
+# exception to the rule
+!src/renderer/data/data.md 
