@@ -2,6 +2,12 @@
 
 var d3 = require("d3");
 
+var $greyLighter = d3.rgb("#E2E2E9")
+var $blue = d3.rgb("#23B2FE");
+var $yellow = d3.rgb("#FEBC2D");
+
+
+
 var coding_scheme = [
   [0, "none", "#f6f6f6", ""],
   [1, "deduction", "silver", ""],
@@ -30,14 +36,14 @@ var svg = d3.select("svg"),
     left: 40
   },
   margin2 = {
-    top: 430,
+    top: 760,
     right: 20,
     bottom: 30,
     left: 40
   },
-  width = +svg.attr("width") - margin.left - margin.right,
-  height = +svg.attr("height") - margin.top - margin.bottom,
-  height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+  width = svg.node().getBoundingClientRect().width - margin.left - margin.right,
+  height = svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
+  height2 = svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
 var bubbleHeight = 20;
 
@@ -164,13 +170,11 @@ key.append("div")
 
 var lengthPerSecond;
 
-var bubbleWidth = function(d, i) {
-  // prevEnd = d.timeEnd;
-  var w = x(d.timeEnd) - x(d.timeStart);
-  if (d.next && x(d.next.timeStart) <= x(d.timeEnd)) {
-    w = x(d.next.timeStart) - x(d.timeStart);
-  }
-  return (w < bubbleHeight) ? bubbleHeight : w;
+var bubbleWidth = function(d) {
+  var tStart = d.timeStart;
+  var tEnd = new Date(tStart.getTime() + 5000);
+  //return (x(tEnd) - x(tStart));
+  return 10;
 }
 
 d3.csv("./data/s8.csv", type).then(function(data) {
@@ -225,14 +229,15 @@ d3.csv("./data/s8.csv", type).then(function(data) {
 
 
 
+
 	var maxSeconds = (maxTime.getTime() - minTime.getTime()) / 1000;
 	lengthPerSecond = (maxSeconds / width);
 
   focus.append("line")
     .attr("x1", 0)
     .attr("x2", x(maxTime))
-    .attr("y1", 20)
-    .attr("y2", 20)
+    .attr("y1", 30)
+    .attr("y2", 30)
     .attr("stroke", "black")
     .attr("stroke-width", 0.1)
 
@@ -244,15 +249,14 @@ d3.csv("./data/s8.csv", type).then(function(data) {
 		.attr('x', function(d, i) {
       return x(d.timeStart);
     })
-		.attr('width', function(d, i) {
-      return 10;
-      //return bubbleWidth(d, i);
+		.attr('width', function(d) {
+      return bubbleWidth(d);
 		})
     .attr('height', function (d) {
       if (coding_scheme[d.code][3] === "frame") {
-        return 60
-      } else if (coding_scheme[d.code][3] === "relation") {
         return 40
+      } else if (coding_scheme[d.code][3] === "relation") {
+        return 30
       } else if (coding_scheme[d.code][3] === "element") {
         return 20
       }
@@ -261,26 +265,36 @@ d3.csv("./data/s8.csv", type).then(function(data) {
     .attr('y', function(d) {
       if (coding_scheme[d.code][4] === "problem") {
         if (coding_scheme[d.code][3] === "frame") {
-          return (- 60 + 20)
+          return (- 40 + 35)
         } else if (coding_scheme[d.code][3] === "relation") {
-          return (- 40 + 20)
+          return (- 30 + 35)
         } else if (coding_scheme[d.code][3] === "element") {
-          return (- 20 + 20)
+          return (- 20 + 35)
         }
       }
-      return 10;
+      return 25;
     })
     .attr('rx', 5)
     .attr('ry', 5)
     .attr('fill', function(d, i) {
       //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
       if (coding_scheme[d.code][4] === "problem") {
-        return "yellow";
+        return $yellow;
       } else if (coding_scheme[d.code][4] === "solution") {
-        return "blue"
+        return $blue
       }
-      return "silver";
+      return $greyLighter;
     })
+    .attr('fill-opacity', 0.6)
+    .attr('stroke', function(d) {
+      if (coding_scheme[d.code][4] === "problem") {
+        return $yellow;
+      } else if (coding_scheme[d.code][4] === "solution") {
+        return $blue
+      }
+      return $greyLighter;
+    })
+    .attr("stroke-width", "1px")
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave)
@@ -308,7 +322,7 @@ d3.csv("./data/s8.csv", type).then(function(data) {
     .attr("y2", height2)
     .attr("stroke", function(d) {
       //return coding_scheme[d.code][2];
-      console.log(d.code[4]);
+      // console.log(d.code[4]);
       if (d.code[4] === "problem") {
         return "yellow";
       } else if (d.code[4] === "solution") {
@@ -342,8 +356,7 @@ function brushed() {
       return x(d.timeStart);
     })
 		.attr('width', function(d, i) {
-			//return bubbleWidth(d, i);
-      return 10;
+      return bubbleWidth(d);
 		})
     // .attr("x2", function(d, i) {
     //   return x(d.timestamp);
@@ -363,8 +376,7 @@ function zoomed() {
       return x(d.timeStart);
     })
     .attr('width', function(d, i) {
-      //return bubbleWidth(d, i);
-      return 10;
+      return bubbleWidth(d);
     })
   focus.select(".axis--x").call(xAxis);
   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
