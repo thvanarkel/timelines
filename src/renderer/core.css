@@ -9592,7 +9592,7 @@ body {
 .timeline-view {
   overflow: hidden;
 }
-.timeline-view line {
+.timeline-view .axis {
   stroke-width: 0.3;
 }
 
@@ -9647,6 +9647,10 @@ body {
 .area {
   fill: steelblue;
   clip-path: url(#clip);
+}
+
+.selection {
+  fill: #E9F7FE;
 }
 
 .zoom {

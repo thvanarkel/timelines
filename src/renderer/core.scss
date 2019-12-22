@@ -149,7 +149,7 @@ $bubble-height: 10px;
   @extend .column;
   overflow: hidden;
 
-  line {
+  .axis {
     // stroke: $gray-800;
     stroke-width: 0.3;
   }
@@ -212,6 +212,10 @@ $bubble-height: 10px;
 .area {
   fill: steelblue;
   clip-path: url(#clip);
+}
+
+.selection {
+  fill: #E9F7FE;
 }
 
 .zoom {

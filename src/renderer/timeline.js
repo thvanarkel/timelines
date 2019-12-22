@@ -236,9 +236,10 @@ Promise.all([
 
       var timeline = focus.append("g")
         .attr("class", "timeline")
-        .attr("transform", "translate(0, " + i * 100 + ")")
+        .attr("transform", "translate(0, " + i * 80 + ")")
 
       timeline.append("line")
+        .attr("class", "axis")
         .attr("x1", 0)
         .attr("x2", x(maxTime))
         .attr("y1", 30)
@@ -322,16 +323,14 @@ Promise.all([
           .attr("y1", 0)
           .attr("y2", 10)
           .attr("stroke", function(d) {
-            //return coding_scheme[d.code][2];
-            // console.log(d.code[4]);
-            if (d.code[4] === "problem") {
-              return "yellow";
-            } else if (d.code[4] === "solution") {
-              return "blue"
+            if (coding_scheme[d.code][4] === "problem") {
+              return $yellow;
+            } else if (coding_scheme[d.code][4] === "solution") {
+              return $blue
             }
-            return "silver";
+            return $greyLighter;
           })
-          .attr("stroke-width", 4)
+          .attr("stroke-width", "1px")
 
 
     }
