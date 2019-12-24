@@ -9607,7 +9607,6 @@ body {
 }
 .tooltip .participant {
   position: relative;
-  background-color: #B030B0;
   min-width: 40px;
   max-height: 40px;
   border-radius: 20px;

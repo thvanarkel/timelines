@@ -177,6 +177,7 @@ var bubbleWidth = function(d) {
 }
 
 Promise.all([
+    d3.csv("./data/s1.csv", type),
     d3.csv("./data/s6.csv", type),
     d3.csv("./data/s8.csv", type),
 ]).then(function(files) {
@@ -195,6 +196,13 @@ Promise.all([
       .style("border-width", "2px")
       .style("z-index", "100")
 
+
+    // var participant = d3.select(".tooltip")
+
+      // .style("background-color", "red")
+
+    // console.log(participant)
+
     var mouseover = function(d) {
       console.log("mouseover");
       tooltip
@@ -208,7 +216,7 @@ Promise.all([
       console.log("mousemove");
       console.log(d3.event.pageX, d3.event.pageY)
       tooltip
-        .html("<div class='participant'><p>" + d.name + "</p></div><p><span>Code</span><br>" + coding_scheme[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
+        .html("<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + coding_scheme[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
         .style("left", function() {
           var x = d3.event.pageX;
           var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -420,7 +428,8 @@ function type(d) {
 		source: determineUtterance([d.links, d.rechts])[0],
 		nWords: numberWords(determineUtterance([d.links, d.rechts])[1]),
 		code: determineCode(d.code),
-    name: firstLetterName(d.firstlettername)
+    name: firstLetterName(d.firstlettername),
+    nameColor: colorForName(firstLetterName(d.firstlettername), d.age, determineUtterance([d.links, d.rechts])[0])
   };
 }
 
@@ -468,3 +477,27 @@ var timeEnd = function(t, w) {
 }
 
 var parseTime = d3.timeParse("%H:%M:%S");
+
+Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+  return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+var colorForName = function(text, age, position) {
+  var hue = Math.random() * 255;
+  var alphabet = "abcdefghijklmnopqrstuvwxyz".split('');
+  var alphabetPosition = text.toLowerCase().split('').map(x => alphabet.indexOf(x) + 1);
+  alphabetPosition[0]
+
+  // TODO: determine the letter of the alphabet + add use other static factors to determineCode
+  // the hue of the participant circle. E.g. Left/Right, male/female, last digit of the age?
+  // hue is between 0-360
+  // letter position: 1-26
+  // last digit age: 0-9
+  //
+  var hue = (alphabetPosition[0] * (age % 10)) / position
+  hue = hue.map(0, 234, 0, 360)
+  // console.log(letter.charCodeAt(0));
+
+  return "hsl(" + hue + ", 80%, 60%)";
+
+}
