@@ -2,6 +2,7 @@
 
 var d3 = require("d3");
 
+// TODO: complete the colour list here
 var $greyLighter = d3.rgb("#E2E2E9")
 var $blue = d3.rgb("#23B2FE");
 var $yellow = d3.rgb("#FEBC2D");
@@ -27,6 +28,29 @@ var coding_scheme = [
   [15, "manipulation1", "teal", "element", "problem"],
   [16, "manipulation2", "maroon", "element", "solution"]
 ];
+
+// var indicator = document.getElementsByClassName('code-indicator')[0];
+
+Array.from(document.querySelectorAll(".code-indicator")).forEach(
+    function(element, index, array) {
+        element.addEventListener('click', function (event) {
+          event.srcElement.classList.toggle('selected');
+          // alert('Hi!');
+        });
+    }
+);
+
+
+// indicator.addEventListener('click', function (event) {
+//    alert('Hi!');
+// });
+
+
+
+
+
+
+// D3 visualisation
 
 var svg = d3.select("svg"),
   margin = {

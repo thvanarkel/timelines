@@ -18,6 +18,33 @@
 @import "../../node_modules/bulma/sass/layout/_all.sass";
 
 
+$purple: #715CF9;
+$purple-shade: #F0F0FE;
+$blue: #23B2FE;
+$blue-shade: #E9F7FE;
+$green: #00D692;
+$green-shade: #E9FBF4;
+$yellow: #FEBC2D;
+$yellow-shade: #FFF8EC;
+$red: #E4525A;
+$red-shade: #FCEEEF;
+$magenta: #DD0C75;
+$magenta-shade: #FBE8F1;
+$peach: #FF6577;
+$peach-shade: #FFF0F2;
+$mauve: #B56EF5;
+$mauve-shade: #F3E6FD;
+
+$black: #00004C;
+$white: #FFFFFF;
+
+$grey-lightest: #F3F3F6;
+$grey-lighter: #E2E2E9;
+$grey: #C9C9D4;
+$grey-darker: #B5B5BF;
+$grey-dark: #797986;
+$grey-darkest: #4C4C57;
+
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   margin: auto;
@@ -100,11 +127,18 @@ $sidebar-width: 300px;
       // @extend .tags;
       @extend .has-addons;
       .code-indicator {
-        @extend .is-warning;
+        //@extend .is-warning;
+        background-color: $purple-shade;
         cursor: pointer;
+        transition: background-color 0.3s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+        &.selected {
+          //background-color:
+          background-color: $purple;
+        }
       }
       .code-label {
-        @extend .has-background-white-bis;
+        // @extend .has-background-white-bis;
+        background-color: $grey-lightest;
       }
     }
   }
