@@ -36,7 +36,7 @@ var svg = d3.select("svg"),
     left: 40
   },
   margin2 = {
-    top: 760,
+    top: 625,
     right: 20,
     bottom: 30,
     left: 40
