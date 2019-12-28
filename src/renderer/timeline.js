@@ -7,6 +7,7 @@ var $greyLighter = d3.rgb("#E2E2E9")
 var $blue = d3.rgb("#23B2FE");
 var $yellow = d3.rgb("#FEBC2D");
 
+var fileNames = ["S1", "S6", "S8"]
 
 // Coding coding scheme
 // [index, code-name, inference-type, inference-subtype, space]
@@ -76,14 +77,14 @@ var svg = d3.select("svg"),
     left: 40
   },
   margin2 = {
-    top: 625,
+    top: svg.node().getBoundingClientRect().height - ((fileNames.length * 15) + 40),
     right: 20,
     bottom: 30,
     left: 40
   },
   width = svg.node().getBoundingClientRect().width - margin.left - margin.right,
   height = svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
-  height2 = svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
+  height2 = (fileNames.length * 15) //svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
 var bubbleHeight = 20;
 
@@ -118,25 +119,25 @@ var zoom = d3.zoom()
   ])
   .on("zoom", zoomed);
 
-var area = d3.area()
-  .curve(d3.curveMonotoneX)
-  .x(function(d) {
-    return x(d.date);
-  })
-  .y0(height)
-  .y1(function(d) {
-    return y(d.price);
-  });
+// var area = d3.area()
+//   .curve(d3.curveMonotoneX)
+//   .x(function(d) {
+//     return x(d.date);
+//   })
+//   .y0(height)
+//   .y1(function(d) {
+//     return y(d.price);
+//   });
 
-var area2 = d3.area()
-  .curve(d3.curveMonotoneX)
-  .x(function(d) {
-    return x2(d.date);
-  })
-  .y0(height2)
-  .y1(function(d) {
-    return y2(d.price);
-  });
+// var area2 = d3.area()
+//   .curve(d3.curveMonotoneX)
+//   .x(function(d) {
+//     return x2(d.date);
+//   })
+//   .y0(height2)
+//   .y1(function(d) {
+//     return y2(d.price);
+//   });
 
 svg.append("defs").append("clipPath")
   .attr("id", "clip")
@@ -215,8 +216,6 @@ var bubbleWidth = function(d) {
   //return (x(tEnd) - x(tStart));
   return 10;
 }
-
-var fileNames = ["S1", "S6", "S8"]
 
 Promise.all([
     d3.csv("./data/s1.csv", type),
@@ -419,6 +418,7 @@ Promise.all([
             return $greyLighter;
           })
           .attr("stroke-width", "1px")
+
     }
     focus.append("g")
         .attr("class", "axis axis--x")
@@ -434,6 +434,8 @@ Promise.all([
       .attr("class", "brush")
       .call(brush)
       .call(brush.move, x.range()); // Set initial brush size
+
+    context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
 
     x.domain([parseTime("0:0:0"), d3.max(endTimes)])
     y.domain([-100, 100]);
