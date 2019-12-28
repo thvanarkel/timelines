@@ -41,7 +41,6 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
           c.toggle('deselected');
           var o = c.contains('deselected') ? "none" : "inline"
           var l = el.parentElement.getAttribute("filter-level")
-          console.log(l)
           if (l === "inference-type") {
             d3.selectAll('.bubble')
               .each(function(d) {
@@ -55,8 +54,6 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
           } else if (l === "inference-subtype") {
             d3.selectAll('.bubble')
               .each(function(d) {
-                console.log(d.code[2])
-                console.log(l)
                 if ((d.code[1]).includes(el.parentElement.getAttribute("code"))) {
                   d3.select(this)
                   .attr("display", o)
@@ -66,6 +63,8 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
         });
     }
 );
+
+
 
 // D3 visualisation
 
@@ -217,6 +216,8 @@ var bubbleWidth = function(d) {
   return 10;
 }
 
+var fileNames = ["S1", "S6", "S8"]
+
 Promise.all([
     d3.csv("./data/s1.csv", type),
     d3.csv("./data/s6.csv", type),
@@ -301,16 +302,38 @@ Promise.all([
 
       var timeline = focus.append("g")
         .attr("class", "timeline")
+        .attr("session", fileNames[i])
         .attr("transform", "translate(0, " + i * 80 + ")")
 
       timeline.append("line")
         .attr("class", "axis")
-        .attr("x1", 0)
-        .attr("x2", x(maxTime))
+        .attr("x1", 20)
+        .attr("x2", width)
         .attr("y1", 30)
         .attr("y2", 30)
         .attr("stroke", "black")
         .attr("stroke-width", 0.1)
+
+      timeline.append("text")
+        .text( function(d) {
+          return fileNames[i];
+        })
+        .attr('x', 0)
+        .attr('y', 33)
+        .attr("font-size", "10px")
+
+        timeline.append("text")
+          .text("p")
+          .attr('x', 20)
+          .attr('y', 25)
+          .attr("font-size", "7px")
+
+        timeline.append("text")
+          .text("s")
+          .attr('x', 20)
+          .attr('y', 39)
+          .attr("font-size", "7px")
+
 
       timeline.selectAll("rect")
         .data(data)
