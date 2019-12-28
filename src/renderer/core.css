@@ -9546,12 +9546,12 @@ body {
 }
 
 .coding-scheme .coding-group .code-type .code-indicator {
-  background-color: #F0F0FE;
+  background-color: #715CF9;
   cursor: pointer;
   transition: background-color 0.3s cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
-.coding-scheme .coding-group .code-type .code-indicator.selected {
-  background-color: #715CF9;
+.coding-scheme .coding-group .code-type .code-indicator.deselected {
+  background-color: #F0F0FE;
 }
 .coding-scheme .coding-group .code-type .code-label {
   background-color: #F3F3F6;

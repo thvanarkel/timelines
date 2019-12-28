@@ -128,12 +128,12 @@ $sidebar-width: 300px;
       @extend .has-addons;
       .code-indicator {
         //@extend .is-warning;
-        background-color: $purple-shade;
+        background-color: $purple;
         cursor: pointer;
         transition: background-color 0.3s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-        &.selected {
+        &.deselected {
           //background-color:
-          background-color: $purple;
+          background-color: $purple-shade;
         }
       }
       .code-label {

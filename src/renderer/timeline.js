@@ -8,25 +8,27 @@ var $blue = d3.rgb("#23B2FE");
 var $yellow = d3.rgb("#FEBC2D");
 
 
+// Coding coding scheme
+// [index, code-name, inference-type, inference-subtype, space]
 
 var coding_scheme = [
-  [0, "none", "#f6f6f6", ""],
-  [1, "deduction", "silver", ""],
-  [2, "induction", "gray", ""],
-  [3, "regressive1", "red", "frame", "problem"],
-  [4, "regressive2", "orange", "frame", "solution"],
-  [5, "transformation1", "yellow", "frame", "problem"],
-  [6, "transformation2", "green", "frame", "solution"],
-  [7, "proposition1", "brown", "frame", "problem"],
-  [8, "proposition2", "blue", "relation", "solution"],
-  [9, "composition1", "purple", "relation", "problem"],
-  [10, "composition2", "black", "relation", "solution"],
-  [11, "prioritisation1", "pink", "relation", "problem"],
-  [12, "prioritisation2", "olive", "relation", "solution"],
-  [13, "decomposition1", "teal", "element", "problem"],
-  [14, "decomposition2", "maroon", "element", "solution"],
-  [15, "manipulation1", "teal", "element", "problem"],
-  [16, "manipulation2", "maroon", "element", "solution"]
+  [0, "none", "none", "", ""],
+  [1, "deduction", "deduction", "", ""],
+  [2, "induction", "induction", "", ""],
+  [3, "regressive1", "abduction", "frame", "problem"],
+  [4, "regressive2", "abduction", "frame", "solution"],
+  [5, "transformation1", "abduction", "frame", "problem"],
+  [6, "transformation2", "abduction", "frame", "solution"],
+  [7, "proposition1", "abduction", "frame", "problem"],
+  [8, "proposition2", "abduction", "relation", "solution"],
+  [9, "composition1", "abduction", "relation", "problem"],
+  [10, "composition2", "abduction", "relation", "solution"],
+  [11, "prioritisation1", "abduction", "relation", "problem"],
+  [12, "prioritisation2", "abduction", "relation", "solution"],
+  [13, "decomposition1", "abduction", "element", "problem"],
+  [14, "decomposition2", "abduction", "element", "solution"],
+  [15, "manipulation1", "abduction", "element", "problem"],
+  [16, "manipulation2", "abduction", "element", "solution"]
 ];
 
 // var indicator = document.getElementsByClassName('code-indicator')[0];
@@ -34,21 +36,36 @@ var coding_scheme = [
 Array.from(document.querySelectorAll(".code-indicator")).forEach(
     function(element, index, array) {
         element.addEventListener('click', function (event) {
-          event.srcElement.classList.toggle('selected');
-          // alert('Hi!');
+          var el = event.srcElement
+          var c = el.classList
+          c.toggle('deselected');
+          var o = c.contains('deselected') ? "none" : "inline"
+          var l = el.parentElement.getAttribute("filter-level")
+          console.log(l)
+          if (l === "inference-type") {
+            d3.selectAll('.bubble')
+              .each(function(d) {
+                console.log(d.code[2])
+                console.log(l)
+                if (d.code[2] === el.parentElement.getAttribute("code")) {
+                  d3.select(this)
+                  .attr("display", o)
+                }
+              })
+          } else if (l === "inference-subtype") {
+            d3.selectAll('.bubble')
+              .each(function(d) {
+                console.log(d.code[2])
+                console.log(l)
+                if ((d.code[1]).includes(el.parentElement.getAttribute("code"))) {
+                  d3.select(this)
+                  .attr("display", o)
+                }
+              })
+          }
         });
     }
 );
-
-
-// indicator.addEventListener('click', function (event) {
-//    alert('Hi!');
-// });
-
-
-
-
-
 
 // D3 visualisation
 
@@ -240,7 +257,7 @@ Promise.all([
       console.log("mousemove");
       console.log(d3.event.pageX, d3.event.pageY)
       tooltip
-        .html("<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + coding_scheme[d.code][1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
+        .html("<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + d.code[1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
         .style("left", function() {
           var x = d3.event.pageX;
           var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -307,22 +324,22 @@ Promise.all([
           return bubbleWidth(d);
     		})
         .attr('height', function (d) {
-          if (coding_scheme[d.code][3] === "frame") {
+          if (d.code[3] === "frame") {
             return 40
-          } else if (coding_scheme[d.code][3] === "relation") {
+          } else if (d.code[3] === "relation") {
             return 30
-          } else if (coding_scheme[d.code][3] === "element") {
+          } else if (d.code[3] === "element") {
             return 20
           }
           return 10
         })
         .attr('y', function(d) {
-          if (coding_scheme[d.code][4] === "problem") {
-            if (coding_scheme[d.code][3] === "frame") {
+          if (d.code[4] === "problem") {
+            if (d.code[3] === "frame") {
               return (- 40 + 35)
-            } else if (coding_scheme[d.code][3] === "relation") {
+            } else if (d.code[3] === "relation") {
               return (- 30 + 35)
-            } else if (coding_scheme[d.code][3] === "element") {
+            } else if (d.code[3] === "element") {
               return (- 20 + 35)
             }
           }
@@ -332,18 +349,18 @@ Promise.all([
         .attr('ry', 5)
         .attr('fill', function(d, i) {
           //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
-          if (coding_scheme[d.code][4] === "problem") {
+          if (d.code[4] === "problem") {
             return $yellow;
-          } else if (coding_scheme[d.code][4] === "solution") {
+          } else if (d.code[4] === "solution") {
             return $blue
           }
           return $greyLighter;
         })
         .attr('fill-opacity', 0.6)
         .attr('stroke', function(d) {
-          if (coding_scheme[d.code][4] === "problem") {
+          if (d.code[4] === "problem") {
             return $yellow;
-          } else if (coding_scheme[d.code][4] === "solution") {
+          } else if (d.code[4] === "solution") {
             return $blue
           }
           return $greyLighter;
@@ -371,9 +388,9 @@ Promise.all([
           .attr("y1", 0)
           .attr("y2", 10)
           .attr("stroke", function(d) {
-            if (coding_scheme[d.code][4] === "problem") {
+            if (d.code[4] === "problem") {
               return $yellow;
-            } else if (coding_scheme[d.code][4] === "solution") {
+            } else if (d.code[4] === "solution") {
               return $blue
             }
             return $greyLighter;
@@ -470,11 +487,11 @@ var determineCode = function(c) {
   if (c.length > 0) {
     for (var code of coding_scheme) {
       if (code[1] === c) {
-        return code[0]
+        return code
       }
     }
   }
-  return "0";
+  return coding_scheme[0];
 }
 
 var determineUtterance = function(participants) {
