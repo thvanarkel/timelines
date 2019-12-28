@@ -74,6 +74,7 @@ body {
   @extend .columns;
   height: 100vh;
   width: 100vw;
+  margin: 0 !important;
 }
 
 $sidebar-width: 300px;
@@ -124,23 +125,36 @@ $sidebar-width: 300px;
       @extend .is-small;
     }
     .code-type {
-      // @extend .tags;
       @extend .has-addons;
       .code-indicator {
-        //@extend .is-warning;
         background-color: $purple;
         cursor: pointer;
         transition: background-color 0.3s cubic-bezier(0.95, 0.05, 0.795, 0.035);
         &.deselected {
-          //background-color:
           background-color: $purple-shade;
         }
       }
       .code-label {
-        // @extend .has-background-white-bis;
         background-color: $grey-lightest;
       }
     }
+    &.inference-types {
+      .code-indicator {
+        background-color: $grey;
+      }
+      &.deselected {
+        background-color: $grey-lightest;
+      }
+    }
+    &.inference-subtypes {
+      .code-indicator {
+        background-color: $green;
+      }
+      &.deselected {
+        background-color: $green-shade;
+      }
+    }
+
   }
 }
 
@@ -185,6 +199,7 @@ $bubble-height: 10px;
 
   .axis {
     // stroke: $gray-800;
+    stroke: black;
     stroke-width: 0.3;
   }
 }
