@@ -9556,6 +9556,18 @@ body {
 .coding-scheme .coding-group .code-type .code-label {
   background-color: #F3F3F6;
 }
+.coding-scheme .coding-group.inference-types .code-indicator {
+  background-color: #C9C9D4;
+}
+.coding-scheme .coding-group.inference-types.deselected {
+  background-color: #F3F3F6;
+}
+.coding-scheme .coding-group.inference-subtypes .code-indicator {
+  background-color: #00D692;
+}
+.coding-scheme .coding-group.inference-subtypes.deselected {
+  background-color: #E9FBF4;
+}
 
 .tags:not(:last-child), .filters .word-filters:not(:last-child) {
   margin-bottom: 0rem;
