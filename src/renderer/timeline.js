@@ -214,7 +214,7 @@ var bubbleWidth = function(d) {
   var tStart = d.timeStart;
   var tEnd = new Date(tStart.getTime() + 5000);
   //return (x(tEnd) - x(tStart));
-  return 10;
+  return 2;
 }
 
 Promise.all([
@@ -367,8 +367,8 @@ Promise.all([
           }
           return 25;
         })
-        .attr('rx', 5)
-        .attr('ry', 5)
+        .attr('rx', 1)
+        .attr('ry', 1)
         .attr('fill', function(d, i) {
           //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
           if (d.code[4] === "problem") {
