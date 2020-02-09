@@ -7,7 +7,7 @@ var $greyLighter = d3.rgb("#E2E2E9")
 var $blue = d3.rgb("#23B2FE");
 var $yellow = d3.rgb("#FEBC2D");
 
-var fileNames = ["s1", "s4", "s5", "s6", "s8"]
+var fileNames = ["p2", "s1", "s4", "s5", "s6", "s8"]
 
 // Coding coding scheme
 // [index, code-name, inference-type, inference-subtype, space]
