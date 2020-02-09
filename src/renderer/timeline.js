@@ -7,7 +7,7 @@ var $greyLighter = d3.rgb("#E2E2E9")
 var $blue = d3.rgb("#23B2FE");
 var $yellow = d3.rgb("#FEBC2D");
 
-var fileNames = ["S1", "S6", "S8"]
+var fileNames = ["s1", "s4", "s5", "s6", "s8"]
 
 // Coding coding scheme
 // [index, code-name, inference-type, inference-subtype, space]
@@ -217,11 +217,13 @@ var bubbleWidth = function(d) {
   return 2;
 }
 
-Promise.all([
-    d3.csv("./data/s1.csv", type),
-    d3.csv("./data/s6.csv", type),
-    d3.csv("./data/s8.csv", type),
-]).then(function(files) {
+var promises = [];
+
+for (var i = 0; i < fileNames.length; i++) {
+  promises.push(d3.csv("./data/" + fileNames[i] + ".csv", type));
+}
+
+Promise.all(promises).then(function(files) {
     // files[0] will contain file1.csv
     // files[1] will contain file2.csv
 
