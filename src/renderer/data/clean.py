@@ -8,7 +8,10 @@ TIMESTAMP = 1
 LINKS = 2
 RECHTS = 3
 
-with open('p2.csv') as csv_file, open('p2_cleaned.csv', 'w') as output:
+fileUrl = input("File name: ")
+outputFileUrl = input("Output file name: ")
+
+with open(fileUrl) as csv_file, open(outputFileUrl, 'w') as output:
     csv_reader = list(csv.reader(csv_file, delimiter=","));
     writer = csv.writer(output)
     line_count = 0
