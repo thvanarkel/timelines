@@ -7,8 +7,8 @@ var $greyLighter = d3.rgb("#E2E2E9")
 var $blue = d3.rgb("#23B2FE");
 var $yellow = d3.rgb("#FEBC2D");
 
-var fileNames = ["p2", "s1", "s4", "s5", "s6", "s8"]
-
+var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
+// var fileNames = ["s7"];
 // Coding coding scheme
 // [index, code-name, inference-type, inference-subtype, space]
 
@@ -119,26 +119,6 @@ var zoom = d3.zoom()
   ])
   .on("zoom", zoomed);
 
-// var area = d3.area()
-//   .curve(d3.curveMonotoneX)
-//   .x(function(d) {
-//     return x(d.date);
-//   })
-//   .y0(height)
-//   .y1(function(d) {
-//     return y(d.price);
-//   });
-
-// var area2 = d3.area()
-//   .curve(d3.curveMonotoneX)
-//   .x(function(d) {
-//     return x2(d.date);
-//   })
-//   .y0(height2)
-//   .y1(function(d) {
-//     return y2(d.price);
-//   });
-
 svg.append("defs").append("clipPath")
   .attr("id", "clip")
   .append("rect")
@@ -181,9 +161,9 @@ var focus = svg.append("g")
   .attr("class", "focus")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var context = svg.append("g")
-  .attr("class", "context")
-  .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+// var context = svg.append("g")
+//   .attr("class", "context")
+//   .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
 var key = d3.select(".key");
 console.log(key);
@@ -238,13 +218,6 @@ Promise.all(promises).then(function(files) {
       .style("border", "solid")
       .style("border-width", "2px")
       .style("z-index", "100")
-
-
-    // var participant = d3.select(".tooltip")
-
-      // .style("background-color", "red")
-
-    // console.log(participant)
 
     var mouseover = function(d) {
       console.log("mouseover");
@@ -335,42 +308,66 @@ Promise.all(promises).then(function(files) {
           .attr('y', 39)
           .attr("font-size", "7px")
 
+      let baseline = 30
 
-      timeline.selectAll("rect")
+      timeline.selectAll("line")
         .data(data)
         .enter()
-    		.append("rect")
+    		.append("line")
     		.attr("class", "bubble")
-    		.attr('x', function(d, i) {
+    		.attr('x1', function(d, i) {
           return x(d.timeStart);
         })
-    		.attr('width', function(d) {
-          return bubbleWidth(d);
-    		})
-        .attr('height', function (d) {
+        .attr('x2', function(d, i) {
+          return x(d.timeStart);
+        })
+    		// .attr('width', function(d) {
+        //   // return bubbleWidth(d);
+        //   return 0.5;
+    		// })
+        .attr('y2', function (d) {
+          // if (d.code[3] === "frame") {
+          //   return 40
+          // } else if (d.code[3] === "relation") {
+          //   return 30
+          // } else if (d.code[3] === "element") {
+          //   return 20
+          // }
+
+          var displacement = 3;
+          var stepsize = 10
           if (d.code[3] === "frame") {
-            return 40
+            displacement = 3 * stepsize
           } else if (d.code[3] === "relation") {
-            return 30
+            displacement = 2 * stepsize
           } else if (d.code[3] === "element") {
-            return 20
+            displacement = stepsize
           }
-          return 10
-        })
-        .attr('y', function(d) {
+
           if (d.code[4] === "problem") {
-            if (d.code[3] === "frame") {
-              return (- 40 + 35)
-            } else if (d.code[3] === "relation") {
-              return (- 30 + 35)
-            } else if (d.code[3] === "element") {
-              return (- 20 + 35)
-            }
+            return baseline + displacement
           }
-          return 25;
+          return baseline - displacement
         })
-        .attr('rx', 1)
-        .attr('ry', 1)
+        .attr('y1', function(d) {
+          if (d.code[1] === "none") {
+            return baseline + 3;
+          }
+          return baseline;
+
+          // if (d.code[4] === "problem") {
+          //   if (d.code[3] === "frame") {
+          //     return (- 40 + 35)
+          //   } else if (d.code[3] === "relation") {
+          //     return (- 30 + 35)
+          //   } else if (d.code[3] === "element") {
+          //     return (- 20 + 35)
+          //   }
+          // }
+          // return 25;
+        })
+        .attr('rx', 0)
+        .attr('ry', 0)
         .attr('fill', function(d, i) {
           //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
           if (d.code[4] === "problem") {
@@ -394,32 +391,32 @@ Promise.all(promises).then(function(files) {
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
 
-        var cTimeline = context.append("g")
-          .attr("class", "cTimeline")
-          .attr("transform", "translate(0, " + i * 15 + ")")
-
-        cTimeline.selectAll("line")
-          .data(data)
-          .enter()
-          .append("line")
-          .attr("class", "line")
-          .attr("x1", function(d) {
-            return x(d.timeStart);
-          })
-          .attr("x2", function(d) {
-            return x(d.timeStart);
-          })
-          .attr("y1", 0)
-          .attr("y2", 10)
-          .attr("stroke", function(d) {
-            if (d.code[4] === "problem") {
-              return $yellow;
-            } else if (d.code[4] === "solution") {
-              return $blue
-            }
-            return $greyLighter;
-          })
-          .attr("stroke-width", "1px")
+        // var cTimeline = context.append("g")
+        //   .attr("class", "cTimeline")
+        //   .attr("transform", "translate(0, " + i * 15 + ")")
+        //
+        // cTimeline.selectAll("line")
+        //   .data(data)
+        //   .enter()
+        //   .append("line")
+        //   .attr("class", "line")
+        //   .attr("x1", function(d) {
+        //     return x(d.timeStart);
+        //   })
+        //   .attr("x2", function(d) {
+        //     return x(d.timeStart);
+        //   })
+        //   .attr("y1", 0)
+        //   .attr("y2", 10)
+        //   .attr("stroke", function(d) {
+        //     if (d.code[4] === "problem") {
+        //       return $yellow;
+        //     } else if (d.code[4] === "solution") {
+        //       return $blue
+        //     }
+        //     return $greyLighter;
+        //   })
+        //   .attr("stroke-width", "1px")
 
     }
     focus.append("g")
@@ -427,17 +424,17 @@ Promise.all(promises).then(function(files) {
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
 
-    context.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height2 + ")")
-      .call(xAxis2);
-
-    context.append("g")
-      .attr("class", "brush")
-      .call(brush)
-      .call(brush.move, x.range()); // Set initial brush size
-
-    context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
+    // context.append("g")
+    //   .attr("class", "axis axis--x")
+    //   .attr("transform", "translate(0," + height2 + ")")
+    //   .call(xAxis2);
+    //
+    // context.append("g")
+    //   .attr("class", "brush")
+    //   .call(brush)
+    //   .call(brush.move, x.range()); // Set initial brush size
+    //
+    // context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
 
     x.domain([parseTime("0:0:0"), d3.max(endTimes)])
     y.domain([-100, 100]);
@@ -453,13 +450,16 @@ function brushed() {
   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
   var s = d3.event.selection || x2.range();
   x.domain(s.map(x2.invert, x2));
-  focus.selectAll(".bubble")
-    .attr("x", function(d, i) {
+    focus.selectAll(".bubble")
+    .attr("x1", function(d, i) {
       return x(d.timeStart);
     })
-		.attr('width', function(d, i) {
-      return bubbleWidth(d);
-		});
+    .attr("x2", function(d, i) {
+      return x(d.timeStart);
+    })
+		// .attr('width', function(d, i) {
+    //   return bubbleWidth(d);
+		// });
     // .attr("x2", function(d, i) {
     //   return x(d.timestamp);
     // });
@@ -474,14 +474,17 @@ function zoomed() {
   var t = d3.event.transform;
   x.domain(t.rescaleX(x2).domain());
   focus.selectAll(".bubble")
-    .attr("x", function(d, i) {
+    .attr("x1", function(d, i) {
       return x(d.timeStart);
     })
-    .attr('width', function(d, i) {
-      return bubbleWidth(d);
+    .attr("x2", function(d, i) {
+      return x(d.timeStart);
     })
+    // .attr('width', function(d, i) {
+    //   return bubbleWidth(d);
+    // })
   focus.select(".axis--x").call(xAxis);
-  context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+  // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }
 
 // PARSE THE DATA INTO THE RIGHT FORMAT FOR THE DATA VISUALISATIONS

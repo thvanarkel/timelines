@@ -9623,10 +9623,6 @@ body {
   font-size: 0.7em;
 }
 
-.bubble {
-  stroke-linecap: round;
-}
-
 .yellow {
   --gradient-color: yellow;
 }
