@@ -13,67 +13,69 @@
   <!-- <div class="titlebar">Timelines</div> -->
   <div class="contents">
     <div class="sidebar" style="-webkit-app-region: drag">
-      <div class="label">Coding scheme</div>
-      <div class="coding-scheme">
-        <div class="coding-group inference-types">
-        <div class="code-type tags" filter-level="inference-type" code="none">
-          <span class="code-indicator tag"></span>
-          <span class="code-label tag">No inference</span>
-        </div>
-        </div>
-        <div class="coding-group inference-types">
-          <div class="label is-small">Basic inferences</div>
-          <div class="code-type tags" filter-level="inference-type" code="deduction">
+      <div class="sidebar-contents">
+        <div class="label">Coding scheme</div>
+        <div class="coding-scheme">
+          <div class="coding-group inference-types">
+          <div class="code-type tags" filter-level="inference-type" code="none">
             <span class="code-indicator tag"></span>
-            <span class="code-label tag">Deduction</span>
+            <span class="code-label tag">No inference</span>
           </div>
-          <div class="code-type tags" filter-level="inference-type" code="induction">
-            <span class="code-indicator tag"></span>
-            <span class="code-label tag">Induction</span>
           </div>
-          <div class="code-type tags" filter-level="inference-type" code="abduction">
-            <span class="code-indicator tag"></span>
-            <span class="code-label tag">Abduction</span>
+          <div class="coding-group inference-types">
+            <div class="label is-small">Basic inferences</div>
+            <div class="code-type tags" filter-level="inference-type" code="deduction">
+              <span class="code-indicator tag"></span>
+              <span class="code-label tag">Deduction</span>
+            </div>
+            <div class="code-type tags" filter-level="inference-type" code="induction">
+              <span class="code-indicator tag"></span>
+              <span class="code-label tag">Induction</span>
+            </div>
+            <div class="code-type tags" filter-level="inference-type" code="abduction">
+              <span class="code-indicator tag"></span>
+              <span class="code-label tag">Abduction</span>
+            </div>
           </div>
-        </div>
 
-        <div class="coding-group inference-subtypes">
-          <div class="coding-group-label">Frame types</div>
-          <div class="code-type tags"  filter-level="inference-subtype" code="regression">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Regression</span>
+          <div class="coding-group inference-subtypes">
+            <div class="coding-group-label">Frame types</div>
+            <div class="code-type tags"  filter-level="inference-subtype" code="regression">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Regression</span>
+            </div>
+            <div class="code-type tags"  filter-level="inference-subtype" code="transformation">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Transformation</span>
+            </div>
+            <div class="code-type tags" filter-level="inference-subtype" code="proposition">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Proposition</span>
+            </div>
           </div>
-          <div class="code-type tags"  filter-level="inference-subtype" code="transformation">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Transformation</span>
-          </div>
-          <div class="code-type tags" filter-level="inference-subtype" code="proposition">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Proposition</span>
-          </div>
-        </div>
 
-        <div class="coding-group inference-subtypes">
-          <div class="coding-group-label">Relational types</div>
-          <div class="code-type tags" filter-level="inference-subtype" code="composition">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Composition</span>
+          <div class="coding-group inference-subtypes">
+            <div class="coding-group-label">Relational types</div>
+            <div class="code-type tags" filter-level="inference-subtype" code="composition">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Composition</span>
+            </div>
+            <div class="code-type tags" filter-level="inference-subtype" code="prioritisation">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Prioritization</span>
+            </div>
           </div>
-          <div class="code-type tags" filter-level="inference-subtype" code="prioritisation">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Prioritization</span>
-          </div>
-        </div>
 
-        <div class="coding-group inference-subtypes">
-          <div class="coding-group-label">Element types</div>
-          <div class="code-type tags" filter-level="inference-subtype" code="decomposition">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Decomposition</span>
-          </div>
-          <div class="code-type tags" filter-level="inference-subtype" code="manipulation">
-            <span class="code-indicator tag"> </span>
-            <span class="code-label tag">Manipulation</span>
+          <div class="coding-group inference-subtypes">
+            <div class="coding-group-label">Element types</div>
+            <div class="code-type tags" filter-level="inference-subtype" code="decomposition">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Decomposition</span>
+            </div>
+            <div class="code-type tags" filter-level="inference-subtype" code="manipulation">
+              <span class="code-indicator tag"> </span>
+              <span class="code-label tag">Manipulation</span>
+            </div>
           </div>
         </div>
       </div>
@@ -97,7 +99,7 @@
 
     <div class="timeline-view">
       <div class="wrapper">
-        <svg id="timeline" width="100%" height="100vh"></svg>
+        <svg id="timeline" width="100%" height="1200"></svg>
       </div>
     </div>
 

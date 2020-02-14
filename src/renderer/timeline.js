@@ -83,7 +83,7 @@ var svg = d3.select("svg"),
     left: 40
   },
   width = svg.node().getBoundingClientRect().width - margin.left - margin.right,
-  height = svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
+  height = 1500,//svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
   height2 = (fileNames.length * 15) //svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
 var bubbleHeight = 20;
@@ -335,7 +335,7 @@ Promise.all(promises).then(function(files) {
           // }
 
           var displacement = 3;
-          var stepsize = 10
+          var stepsize = 7
           if (d.code[3] === "frame") {
             displacement = 3 * stepsize
           } else if (d.code[3] === "relation") {
