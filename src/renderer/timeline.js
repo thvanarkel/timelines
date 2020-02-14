@@ -135,31 +135,6 @@ svg.append("defs").append("clipPath")
   .attr("width", width)
   .attr("height", height)
 
-var defs = svg.select("defs")
-
-  var gradients = defs.selectAll("linearGradient")
-    .data(coding_scheme)
-    .enter()
-    .append("linearGradient")
-      .attr("id", function(d, i) {
-        return "gradient-" + d[2];
-      }  )
-      .attr("x1", "0%")
-      .attr("y1", "0%")
-      .attr("x2", "0%")
-      .attr("y2", "100%")
-
-  gradients.append("stop")
-    .attr("class", "stop1")
-    .attr("offset", "0%")
-    .attr("stop-color", "#f7f9ff");
-  gradients.append("stop")
-    .attr("class", "stop2")
-    .attr("offset", "100%")
-    .attr("stop-color", function(d, i) {
-      return d[2];
-    });
-
 svg.append("rect")
   .attr("class", "zoom")
   .attr("width", width)
@@ -174,31 +149,6 @@ var focus = svg.append("g")
 // var context = svg.append("g")
 //   .attr("class", "context")
 //   .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-// var key = d3.select(".key");
-// console.log(key);
-//
-// var items = key.selectAll("item")
-//               .data(coding_scheme)
-//               .enter()
-//               .append("div")
-//               .attr("class", "item");
-//
-// items.append("div")
-//     .attr("class", "indicator")
-//     .style("background-color", function(d, i) {
-//       return d[2];
-//     });
-//
-// items.append("p")
-//     .attr("class", "name")
-//     .text(function(d) {
-//       return d[1];
-//     });
-//
-// key.append("div")
-//   .attr("class", "indicator");
-
 
 var bubbleWidth = function(d) {
   var tStart = d.timeStart;
