@@ -65,7 +65,17 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
     }
 );
 
+class Timeline {
+  constructor(opts) {
+    this.filename = opts.filename;
+    this.container = opts.container;
+  }
 
+  create() {
+
+  }
+
+}
 
 // D3 visualisation
 
@@ -165,29 +175,29 @@ var focus = svg.append("g")
 //   .attr("class", "context")
 //   .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-var key = d3.select(".key");
-console.log(key);
-
-var items = key.selectAll("item")
-              .data(coding_scheme)
-              .enter()
-              .append("div")
-              .attr("class", "item");
-
-items.append("div")
-    .attr("class", "indicator")
-    .style("background-color", function(d, i) {
-      return d[2];
-    });
-
-items.append("p")
-    .attr("class", "name")
-    .text(function(d) {
-      return d[1];
-    });
-
-key.append("div")
-  .attr("class", "indicator");
+// var key = d3.select(".key");
+// console.log(key);
+//
+// var items = key.selectAll("item")
+//               .data(coding_scheme)
+//               .enter()
+//               .append("div")
+//               .attr("class", "item");
+//
+// items.append("div")
+//     .attr("class", "indicator")
+//     .style("background-color", function(d, i) {
+//       return d[2];
+//     });
+//
+// items.append("p")
+//     .attr("class", "name")
+//     .text(function(d) {
+//       return d[1];
+//     });
+//
+// key.append("div")
+//   .attr("class", "indicator");
 
 
 var bubbleWidth = function(d) {
