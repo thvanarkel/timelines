@@ -92,4 +92,5 @@ out/
 src/renderer/data/*
 
 # exception to the rule
-!src/renderer/data/data.md 
+!src/renderer/data/data.md
+!src/renderer/data/clean.py

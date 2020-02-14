@@ -4,11 +4,11 @@ var d3 = require("d3");
 
 // TODO: complete the colour list here
 var $greyLighter = d3.rgb("#E2E2E9")
-var $blue = d3.rgb("#23B2FE");
-var $yellow = d3.rgb("#FEBC2D");
+var $blue = d3.rgb("#0b4eb3"); //#23B2FE
+var $yellow = d3.rgb("#f9a800"); // #FEBC2D
 
-var fileNames = ["S1", "S6", "S8"]
-
+var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
+// var fileNames = ["s7"];
 // Coding coding scheme
 // [index, code-name, inference-type, inference-subtype, space]
 
@@ -16,16 +16,16 @@ var coding_scheme = [
   [0, "none", "none", "", ""],
   [1, "deduction", "deduction", "", ""],
   [2, "induction", "induction", "", ""],
-  [3, "regressive1", "abduction", "frame", "problem"],
-  [4, "regressive2", "abduction", "frame", "solution"],
+  [3, "regression1", "abduction", "frame", "problem"],
+  [4, "regression2", "abduction", "frame", "solution"],
   [5, "transformation1", "abduction", "frame", "problem"],
   [6, "transformation2", "abduction", "frame", "solution"],
   [7, "proposition1", "abduction", "frame", "problem"],
   [8, "proposition2", "abduction", "relation", "solution"],
   [9, "composition1", "abduction", "relation", "problem"],
   [10, "composition2", "abduction", "relation", "solution"],
-  [11, "prioritisation1", "abduction", "relation", "problem"],
-  [12, "prioritisation2", "abduction", "relation", "solution"],
+  [11, "prioritization1", "abduction", "relation", "problem"],
+  [12, "prioritization2", "abduction", "relation", "solution"],
   [13, "decomposition1", "abduction", "element", "problem"],
   [14, "decomposition2", "abduction", "element", "solution"],
   [15, "manipulation1", "abduction", "element", "problem"],
@@ -83,7 +83,7 @@ var svg = d3.select("svg"),
     left: 40
   },
   width = svg.node().getBoundingClientRect().width - margin.left - margin.right,
-  height = svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
+  height = 1500,//svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
   height2 = (fileNames.length * 15) //svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
 var bubbleHeight = 20;
@@ -118,26 +118,6 @@ var zoom = d3.zoom()
     [width, height]
   ])
   .on("zoom", zoomed);
-
-// var area = d3.area()
-//   .curve(d3.curveMonotoneX)
-//   .x(function(d) {
-//     return x(d.date);
-//   })
-//   .y0(height)
-//   .y1(function(d) {
-//     return y(d.price);
-//   });
-
-// var area2 = d3.area()
-//   .curve(d3.curveMonotoneX)
-//   .x(function(d) {
-//     return x2(d.date);
-//   })
-//   .y0(height2)
-//   .y1(function(d) {
-//     return y2(d.price);
-//   });
 
 svg.append("defs").append("clipPath")
   .attr("id", "clip")
@@ -181,9 +161,9 @@ var focus = svg.append("g")
   .attr("class", "focus")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var context = svg.append("g")
-  .attr("class", "context")
-  .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+// var context = svg.append("g")
+//   .attr("class", "context")
+//   .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
 var key = d3.select(".key");
 console.log(key);
@@ -213,15 +193,16 @@ key.append("div")
 var bubbleWidth = function(d) {
   var tStart = d.timeStart;
   var tEnd = new Date(tStart.getTime() + 5000);
-  //return (x(tEnd) - x(tStart));
-  return 10;
+  return 2;
 }
 
-Promise.all([
-    d3.csv("./data/s1.csv", type),
-    d3.csv("./data/s6.csv", type),
-    d3.csv("./data/s8.csv", type),
-]).then(function(files) {
+var promises = [];
+
+for (var i = 0; i < fileNames.length; i++) {
+  promises.push(d3.csv("./data/" + fileNames[i] + ".csv", type));
+}
+
+Promise.all(promises).then(function(files) {
     // files[0] will contain file1.csv
     // files[1] will contain file2.csv
 
@@ -237,20 +218,12 @@ Promise.all([
       .style("border-width", "2px")
       .style("z-index", "100")
 
-
-    // var participant = d3.select(".tooltip")
-
-      // .style("background-color", "red")
-
-    // console.log(participant)
-
     var mouseover = function(d) {
       console.log("mouseover");
       tooltip
         .style("opacity", 1)
         .style("z-index", 100)
       d3.select(this)
-        // .style("stroke", "black")
         .style("opacity", 1)
     }
     var mousemove = function(d) {
@@ -281,8 +254,6 @@ Promise.all([
         .style("opacity", 0)
         .style("z-index", -1)
       d3.select(this)
-        // .style("stroke", "none")
-        // .style("opacity", 0.8)
     }
 
     for(let i = 0; i < files.length; i++) {
@@ -333,44 +304,44 @@ Promise.all([
           .attr('y', 39)
           .attr("font-size", "7px")
 
+      let baseline = 30
 
-      timeline.selectAll("rect")
+      timeline.selectAll("line")
         .data(data)
         .enter()
-    		.append("rect")
+    		.append("line")
     		.attr("class", "bubble")
-    		.attr('x', function(d, i) {
+    		.attr('x1', function(d, i) {
           return x(d.timeStart);
         })
-    		.attr('width', function(d) {
-          return bubbleWidth(d);
-    		})
-        .attr('height', function (d) {
+        .attr('x2', function(d, i) {
+          return x(d.timeStart);
+        })
+        .attr('y2', function (d) {
+          var displacement = 3;
+          var stepsize = 7
           if (d.code[3] === "frame") {
-            return 40
+            displacement = 3 * stepsize
           } else if (d.code[3] === "relation") {
-            return 30
+            displacement = 2 * stepsize
           } else if (d.code[3] === "element") {
-            return 20
+            displacement = stepsize
           }
-          return 10
-        })
-        .attr('y', function(d) {
+
           if (d.code[4] === "problem") {
-            if (d.code[3] === "frame") {
-              return (- 40 + 35)
-            } else if (d.code[3] === "relation") {
-              return (- 30 + 35)
-            } else if (d.code[3] === "element") {
-              return (- 20 + 35)
-            }
+            return baseline + displacement
           }
-          return 25;
+          return baseline - displacement
         })
-        .attr('rx', 5)
-        .attr('ry', 5)
+        .attr('y1', function(d) {
+          if (d.code[1] === "none") {
+            return baseline + 3;
+          }
+          return baseline;
+        })
+        .attr('rx', 0)
+        .attr('ry', 0)
         .attr('fill', function(d, i) {
-          //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
           if (d.code[4] === "problem") {
             return $yellow;
           } else if (d.code[4] === "solution") {
@@ -392,32 +363,32 @@ Promise.all([
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
 
-        var cTimeline = context.append("g")
-          .attr("class", "cTimeline")
-          .attr("transform", "translate(0, " + i * 15 + ")")
-
-        cTimeline.selectAll("line")
-          .data(data)
-          .enter()
-          .append("line")
-          .attr("class", "line")
-          .attr("x1", function(d) {
-            return x(d.timeStart);
-          })
-          .attr("x2", function(d) {
-            return x(d.timeStart);
-          })
-          .attr("y1", 0)
-          .attr("y2", 10)
-          .attr("stroke", function(d) {
-            if (d.code[4] === "problem") {
-              return $yellow;
-            } else if (d.code[4] === "solution") {
-              return $blue
-            }
-            return $greyLighter;
-          })
-          .attr("stroke-width", "1px")
+        // var cTimeline = context.append("g")
+        //   .attr("class", "cTimeline")
+        //   .attr("transform", "translate(0, " + i * 15 + ")")
+        //
+        // cTimeline.selectAll("line")
+        //   .data(data)
+        //   .enter()
+        //   .append("line")
+        //   .attr("class", "line")
+        //   .attr("x1", function(d) {
+        //     return x(d.timeStart);
+        //   })
+        //   .attr("x2", function(d) {
+        //     return x(d.timeStart);
+        //   })
+        //   .attr("y1", 0)
+        //   .attr("y2", 10)
+        //   .attr("stroke", function(d) {
+        //     if (d.code[4] === "problem") {
+        //       return $yellow;
+        //     } else if (d.code[4] === "solution") {
+        //       return $blue
+        //     }
+        //     return $greyLighter;
+        //   })
+        //   .attr("stroke-width", "1px")
 
     }
     focus.append("g")
@@ -425,17 +396,17 @@ Promise.all([
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
 
-    context.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + height2 + ")")
-      .call(xAxis2);
-
-    context.append("g")
-      .attr("class", "brush")
-      .call(brush)
-      .call(brush.move, x.range()); // Set initial brush size
-
-    context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
+    // context.append("g")
+    //   .attr("class", "axis axis--x")
+    //   .attr("transform", "translate(0," + height2 + ")")
+    //   .call(xAxis2);
+    //
+    // context.append("g")
+    //   .attr("class", "brush")
+    //   .call(brush)
+    //   .call(brush.move, x.range()); // Set initial brush size
+    //
+    // context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
 
     x.domain([parseTime("0:0:0"), d3.max(endTimes)])
     y.domain([-100, 100]);
@@ -451,16 +422,13 @@ function brushed() {
   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
   var s = d3.event.selection || x2.range();
   x.domain(s.map(x2.invert, x2));
-  focus.selectAll(".bubble")
-    .attr("x", function(d, i) {
+    focus.selectAll(".bubble")
+    .attr("x1", function(d, i) {
       return x(d.timeStart);
     })
-		.attr('width', function(d, i) {
-      return bubbleWidth(d);
-		});
-    // .attr("x2", function(d, i) {
-    //   return x(d.timestamp);
-    // });
+    .attr("x2", function(d, i) {
+      return x(d.timeStart);
+    })
   focus.select(".axis--x").call(xAxis);
   svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
     .scale(width / (s[1] - s[0]))
@@ -472,14 +440,14 @@ function zoomed() {
   var t = d3.event.transform;
   x.domain(t.rescaleX(x2).domain());
   focus.selectAll(".bubble")
-    .attr("x", function(d, i) {
+    .attr("x1", function(d, i) {
       return x(d.timeStart);
     })
-    .attr('width', function(d, i) {
-      return bubbleWidth(d);
+    .attr("x2", function(d, i) {
+      return x(d.timeStart);
     })
   focus.select(".axis--x").call(xAxis);
-  context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+  // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }
 
 // PARSE THE DATA INTO THE RIGHT FORMAT FOR THE DATA VISUALISATIONS
