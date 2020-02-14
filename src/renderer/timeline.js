@@ -193,7 +193,6 @@ key.append("div")
 var bubbleWidth = function(d) {
   var tStart = d.timeStart;
   var tEnd = new Date(tStart.getTime() + 5000);
-  //return (x(tEnd) - x(tStart));
   return 2;
 }
 
@@ -225,7 +224,6 @@ Promise.all(promises).then(function(files) {
         .style("opacity", 1)
         .style("z-index", 100)
       d3.select(this)
-        // .style("stroke", "black")
         .style("opacity", 1)
     }
     var mousemove = function(d) {
@@ -256,8 +254,6 @@ Promise.all(promises).then(function(files) {
         .style("opacity", 0)
         .style("z-index", -1)
       d3.select(this)
-        // .style("stroke", "none")
-        // .style("opacity", 0.8)
     }
 
     for(let i = 0; i < files.length; i++) {
@@ -321,19 +317,7 @@ Promise.all(promises).then(function(files) {
         .attr('x2', function(d, i) {
           return x(d.timeStart);
         })
-    		// .attr('width', function(d) {
-        //   // return bubbleWidth(d);
-        //   return 0.5;
-    		// })
         .attr('y2', function (d) {
-          // if (d.code[3] === "frame") {
-          //   return 40
-          // } else if (d.code[3] === "relation") {
-          //   return 30
-          // } else if (d.code[3] === "element") {
-          //   return 20
-          // }
-
           var displacement = 3;
           var stepsize = 7
           if (d.code[3] === "frame") {
@@ -354,22 +338,10 @@ Promise.all(promises).then(function(files) {
             return baseline + 3;
           }
           return baseline;
-
-          // if (d.code[4] === "problem") {
-          //   if (d.code[3] === "frame") {
-          //     return (- 40 + 35)
-          //   } else if (d.code[3] === "relation") {
-          //     return (- 30 + 35)
-          //   } else if (d.code[3] === "element") {
-          //     return (- 20 + 35)
-          //   }
-          // }
-          // return 25;
         })
         .attr('rx', 0)
         .attr('ry', 0)
         .attr('fill', function(d, i) {
-          //return "url(#gradient-" + coding_scheme[d.code][2] + ")"
           if (d.code[4] === "problem") {
             return $yellow;
           } else if (d.code[4] === "solution") {
@@ -457,12 +429,6 @@ function brushed() {
     .attr("x2", function(d, i) {
       return x(d.timeStart);
     })
-		// .attr('width', function(d, i) {
-    //   return bubbleWidth(d);
-		// });
-    // .attr("x2", function(d, i) {
-    //   return x(d.timestamp);
-    // });
   focus.select(".axis--x").call(xAxis);
   svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
     .scale(width / (s[1] - s[0]))
@@ -480,9 +446,6 @@ function zoomed() {
     .attr("x2", function(d, i) {
       return x(d.timeStart);
     })
-    // .attr('width', function(d, i) {
-    //   return bubbleWidth(d);
-    // })
   focus.select(".axis--x").call(xAxis);
   // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }
