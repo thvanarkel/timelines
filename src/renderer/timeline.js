@@ -102,6 +102,7 @@ class Timeline {
                           .style("margin-left", this.margin.left)
                           .style("margin-top", this.margin.top)
       timeline = this.svg.append("g")
+                          .attr("transform", "translate(40 0)")
 
       this.controls = this.container.append("div")
                     .attr("class", "controls")
@@ -167,39 +168,40 @@ class Timeline {
               // .on("mousemove", mousemove)
               // .on("mouseleave", mouseleave)
 
-      timeline.append("text")
-        .text( function(d) {
-          return fileNames[i];
-        })
+
+
+      var labels = ["FR", "RE", "EL", "", "EL", "RE", "FR"];
+
+      var l = this.svg.append("g");
+
+      l.append("text")
+        .text(this.filename)
         .attr('x', 0)
-        .attr('y', 33)
+        .attr('y', 55)
         .attr("font-size", "10px")
 
-        var labels = ["FR", "RE", "EL", "", "EL", "RE", "FR"];
-
-      var l = timeline.append("g");
-        for (var i = 0; i < labels.length; i++) {
-          var a = i < 3 ? 5 : 0
-          l.append("text")
-            .text(labels[i])
-            .attr('x', 10)
-            .attr('y', 29 + (i * 7) + a)
-            .attr("font-size", "7px")
-          l.append("line")
-            .attr('x1', 10)
-            .attr('x2', this.#width)
-            .attr('y1', 29 + (i * 7))
-            .attr('y2', 29 + (i * 7))
-            .attr("stroke", "black")
-            .attr("stroke-width", 0.1)
-        }
+      for (var i = 0; i < labels.length; i++) {
+        var a = i < 3 ? 5 : 0
+        l.append("text")
+          .text(labels[i])
+          .attr('x', 20)
+          .attr('y', 29 + (i * 7) + a)
+          .attr("font-size", "7px")
         l.append("line")
-          .attr('x1', 25)
-          .attr('x2', 25)
-          .attr('y1', 29)
-          .attr('y2', 29 + ((labels.length - 1) * 7))
+          .attr('x1', 20)
+          .attr('x2', this.#width)
+          .attr('y1', 29 + (i * 7))
+          .attr('y2', 29 + (i * 7))
           .attr("stroke", "black")
-          .attr("stroke-width", 1)
+          .attr("stroke-width", 0.1)
+      }
+      l.append("line")
+        .attr('x1', 35)
+        .attr('x2', 35)
+        .attr('y1', 29)
+        .attr('y2', 29 + ((labels.length - 1) * 7))
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
 
 
 
@@ -231,7 +233,7 @@ class Timeline {
         //   .attr("font-size", "7px")
 
       this.setXScale();
-      this.xScale.range([0, this.#width]);
+      this.xScale.range([0, this.#width - 40]);
 
       this.xAxis = d3.axisBottom()
           .scale(this.xScale);
@@ -284,7 +286,7 @@ class Timeline {
       control.select("i").html("timer_off")
     }
     this.xScale = this.scales[this.scaleType];
-    this.xScale.range([0, this.#width]);
+    this.xScale.range([0, this.#width - 40]);
     console.log(this.nBars)
   }
 
