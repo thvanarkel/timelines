@@ -7,7 +7,6 @@ var $greyLighter = d3.rgb("#E2E2E9")
 var $blue = d3.rgb("#0b4eb3"); //#23B2FE
 var $yellow = d3.rgb("#f9a800"); // #FEBC2D
 
-var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 // var fileNames = ["s7"];
 // Coding coding scheme
 // [index, code-name, inference-type, inference-subtype, space]
@@ -147,11 +146,18 @@ class Timeline {
   }
 }
 
-var timeline = new Timeline({
-  filename: "s4",
-  container: ".timeline-view"
-})
-timeline.create()
+var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
+
+for (var i = 0; i < fileNames.length; i++) {
+  var timeline = new Timeline({
+    filename: fileNames[i],
+    container: ".timeline-view"
+  })
+  timeline.create()
+}
+
+
+
 
 // D3 visualisation
 
