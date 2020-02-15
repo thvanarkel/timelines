@@ -1,6 +1,8 @@
 'use strict'
 
 var d3 = require("d3");
+var fs = require("fs");
+const { dialog } = require('electron').remote
 
 // TODO: complete the colour list here
 var $greyLighter = d3.rgb("#E2E2E9")
@@ -101,15 +103,15 @@ class Timeline {
 
       this.controls = this.container.append("form")
                     .attr("class", "controls")
-                    .html('Scale:\n<label><input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label>')
+                    .html('Scale:\n<label><input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
 
-      svg = this.container.append("svg")
+      this.svg = this.container.append("svg")
                           .attr("height", this.#height - this.margin.top - this.margin.bottom)
                           .attr("width", this.#width - this.margin.left - this.margin.right)
                           .style("position", "relative")
                           .style("margin-left", this.margin.left)
                           .style("margin-top", this.margin.top)
-      timeline = svg.append("g")
+      timeline = this.svg.append("g")
 
       console.log(this.container)
 
@@ -175,12 +177,13 @@ class Timeline {
       this.xAxis = d3.axisBottom()
           .scale(this.xScale);
 
-      this.domXAxis = svg.append("g")
+      this.domXAxis = this.svg.append("g")
           .attr("class", "axis axis--x")
           // .attr("transform", "translate(0," + this.#height + ")")
           .call(this.xAxis);
 
       this.controls.selectAll("input").on("click", this.changeXScale.bind(this));
+      this.controls.selectAll("button").on("click", this.export.bind(this));
 
     }).bind(this));
     console.log(this)
@@ -225,105 +228,115 @@ class Timeline {
     }
   }
 
-
+  export() {
+    var svgString = getSVGString(this.svg.node());
+    var path = dialog.showOpenDialogSync({ properties: ['openDirectory'] })
+    path += "/timeline.svg"
+    fs.writeFile(path, svgString, (err) => {
+      // throws an error, you could also catch it here
+    if (err) throw err;
+      // success case, the file was saved
+      console.log('Saved visual!');
+    });
+  }
 }
 
-class Chart {
-    margin = { top: 40, right: 25, bottom: 20, left: 25 }
-
-    animationDuration = 400
-
-    scales = {
-        power2: d3.scalePow().exponent(2),
-        linear: d3.scaleLinear(),
-        sqrt:   d3.scalePow().exponent(0.5),
-        log2:   d3.scaleLog().base(2),
-        log10:  d3.scaleLog().base(10),
-        time:   d3.scaleTime()
-    }
-
-    constructor(container, data) {
-        this.el = d3.select(".js-chart")
-            .attr("width", container.width)
-            .attr("height", container.height);
-
-        this.width  = container.width - this.margin.left - this.margin.right;
-        this.height = container.height - this.margin.top - this.margin.bottom;
-
-        this.adaptScales();
-        this.setXScale();
-        this.draw(data);
-
-        d3.selectAll(".js-chart-container input").on("click", this.changeXScale.bind(this));
-    }
-
-    draw(data) {
-        var mainGroup, series;
-
-        mainGroup = this.el.append("g")
-            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-
-        series = mainGroup.selectAll(".series").data(data)
-            .enter().append("g")
-                .attr("class", function (d) { return "series " + d.name; });
-
-        this.points = series.selectAll(".point").data((function (d) {
-          console.log(this.scaleType)
-          return d.points;
-        }).bind(this))
-            .enter().append("line")
-                .attr("class", "point")
-                .attr("x1", this.xScale)
-                .attr("x2", this.xScale)
-                .attr("y1", this.height / 2 - 10)
-                .attr("y2", this.height / 2 + 10)
-                .attr("stroke-width", "1px")
-                .attr("stroke", "red")
-                // .attr("r", 6);
-
-        this.points.append("title")
-           .text(String);
-
-        this.xAxis = d3.axisBottom()
-            .scale(this.xScale);
-
-        this.domXAxis = mainGroup.append("g")
-            .attr("class", "axis axis--x")
-            // .attr("transform", "translate(0," + this.height + ")")
-            .call(this.xAxis);
-    }
-
-    redraw() {
-        this.domXAxis.transition()
-            .duration(this.animationDuration)
-            .call(this.xAxis.scale(this.xScale));
-        this.points.transition()
-            .duration(this.animationDuration)
-            .attr("x1", this.xScale)
-            .attr("x2", this.xScale);
-    }
-
-    adaptScales() {
-        Object.keys(this.scales).forEach(function (scaleType) {
-            this.scales[scaleType]
-                .domain([1, 1000])
-                .range([0, this.width]);
-        }, this);
-    }
-
-    changeXScale() {
-
-        this.setXScale();
-        console.log(this.scaleType)
-        this.redraw();
-    }
-
-    setXScale() {
-        this.scaleType = this.controls.select("input:checked").node().value;
-
-        this.xScale = this.scales[this.scaleType];
-    }
-};
+// class Chart {
+//     margin = { top: 40, right: 25, bottom: 20, left: 25 }
+//
+//     animationDuration = 400
+//
+//     scales = {
+//         power2: d3.scalePow().exponent(2),
+//         linear: d3.scaleLinear(),
+//         sqrt:   d3.scalePow().exponent(0.5),
+//         log2:   d3.scaleLog().base(2),
+//         log10:  d3.scaleLog().base(10),
+//         time:   d3.scaleTime()
+//     }
+//
+//     constructor(container, data) {
+//         this.el = d3.select(".js-chart")
+//             .attr("width", container.width)
+//             .attr("height", container.height);
+//
+//         this.width  = container.width - this.margin.left - this.margin.right;
+//         this.height = container.height - this.margin.top - this.margin.bottom;
+//
+//         this.adaptScales();
+//         this.setXScale();
+//         this.draw(data);
+//
+//         d3.selectAll(".js-chart-container input").on("click", this.changeXScale.bind(this));
+//     }
+//
+//     draw(data) {
+//         var mainGroup, series;
+//
+//         mainGroup = this.el.append("g")
+//             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+//
+//         series = mainGroup.selectAll(".series").data(data)
+//             .enter().append("g")
+//                 .attr("class", function (d) { return "series " + d.name; });
+//
+//         this.points = series.selectAll(".point").data((function (d) {
+//           console.log(this.scaleType)
+//           return d.points;
+//         }).bind(this))
+//             .enter().append("line")
+//                 .attr("class", "point")
+//                 .attr("x1", this.xScale)
+//                 .attr("x2", this.xScale)
+//                 .attr("y1", this.height / 2 - 10)
+//                 .attr("y2", this.height / 2 + 10)
+//                 .attr("stroke-width", "1px")
+//                 .attr("stroke", "red")
+//                 // .attr("r", 6);
+//
+//         this.points.append("title")
+//            .text(String);
+//
+//         this.xAxis = d3.axisBottom()
+//             .scale(this.xScale);
+//
+//         this.domXAxis = mainGroup.append("g")
+//             .attr("class", "axis axis--x")
+//             // .attr("transform", "translate(0," + this.height + ")")
+//             .call(this.xAxis);
+//     }
+//
+//     redraw() {
+//         this.domXAxis.transition()
+//             .duration(this.animationDuration)
+//             .call(this.xAxis.scale(this.xScale));
+//         this.points.transition()
+//             .duration(this.animationDuration)
+//             .attr("x1", this.xScale)
+//             .attr("x2", this.xScale);
+//     }
+//
+//     adaptScales() {
+//         Object.keys(this.scales).forEach(function (scaleType) {
+//             this.scales[scaleType]
+//                 .domain([1, 1000])
+//                 .range([0, this.width]);
+//         }, this);
+//     }
+//
+//     changeXScale() {
+//
+//         this.setXScale();
+//         console.log(this.scaleType)
+//         this.redraw();
+//     }
+//
+//     setXScale() {
+//         this.scaleType = this.controls.select("input:checked").node().value;
+//
+//         this.xScale = this.scales[this.scaleType];
+//     }
+// };
 
 var container = {
     width: document.querySelector(".timeline-view").clientWidth,
@@ -783,4 +796,77 @@ var colorForName = function(text, age, position) {
 
   return "hsl(" + hue + ", 80%, 60%)";
 
+}
+
+// Below are the functions that handle actual exporting:
+// getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
+function getSVGString( svgNode ) {
+	svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+	var cssStyleText = getCSSStyles( svgNode );
+	appendCSS( cssStyleText, svgNode );
+
+	var serializer = new XMLSerializer();
+	var svgString = serializer.serializeToString(svgNode);
+	svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+	svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+	return svgString;
+
+	function getCSSStyles( parentElement ) {
+		var selectorTextArr = [];
+
+		// Add Parent element Id and Classes to the list
+		selectorTextArr.push( '#'+parentElement.id );
+		for (var c = 0; c < parentElement.classList.length; c++)
+				if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
+					selectorTextArr.push( '.'+parentElement.classList[c] );
+
+		// Add Children element Ids and Classes to the list
+		var nodes = parentElement.getElementsByTagName("*");
+		for (var i = 0; i < nodes.length; i++) {
+			var id = nodes[i].id;
+			if ( !contains('#'+id, selectorTextArr) )
+				selectorTextArr.push( '#'+id );
+
+			var classes = nodes[i].classList;
+			for (var c = 0; c < classes.length; c++)
+				if ( !contains('.'+classes[c], selectorTextArr) )
+					selectorTextArr.push( '.'+classes[c] );
+		}
+
+		// Extract CSS Rules
+		var extractedCSSText = "";
+		for (var i = 0; i < document.styleSheets.length; i++) {
+			var s = document.styleSheets[i];
+
+			try {
+			    if(!s.cssRules) continue;
+			} catch( e ) {
+		    		if(e.name !== 'SecurityError') throw e; // for Firefox
+		    		continue;
+		    	}
+
+			var cssRules = s.cssRules;
+			for (var r = 0; r < cssRules.length; r++) {
+				if ( contains( cssRules[r].selectorText, selectorTextArr ) )
+					extractedCSSText += cssRules[r].cssText;
+			}
+		}
+
+
+		return extractedCSSText;
+
+		function contains(str,arr) {
+			return arr.indexOf( str ) === -1 ? false : true;
+		}
+
+	}
+
+	function appendCSS( cssText, element ) {
+		var styleElement = document.createElement("style");
+		styleElement.setAttribute("type","text/css");
+		styleElement.innerHTML = cssText;
+		var refNode = element.hasChildNodes() ? element.children[0] : null;
+		element.insertBefore( styleElement, refNode );
+	}
 }
