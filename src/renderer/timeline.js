@@ -66,16 +66,92 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
 );
 
 class Timeline {
+  filename;
+  container;
+  #height = 100;
+  #width = 750;
+  x;
+
   constructor(opts) {
     this.filename = opts.filename;
     this.container = opts.container;
   }
 
   create() {
+    d3.csv("./data/" + this.filename + ".csv", type).then((function(data) {
 
+      svg = d3.select(this.container)
+              .append("div")
+              .attr("class", "timeline")
+              .append("svg")
+              .attr("height", this.#height)
+              .attr("width", this.#width)
+      timeline = svg.append("g")
+
+      this.x = d3.scaleTime().range([0, this.#width])
+      this.x.domain([0, data.length])
+
+      var baseline = 40;
+
+      var scaleX = this.x
+
+      timeline.selectAll("line")
+              .data(data)
+              .enter()
+              .append("line")
+              .attr("class", "episode")
+              .attr('x1', function(d, i) {
+                return scaleX(i)
+                // return (i * 5);
+              })
+              .attr('x2', function(d, i) {
+                return scaleX(i)
+                // return (i * 5);
+              })
+              .attr('y1', function(d) {
+                if (d.code[1] === "none") {
+                  return baseline + 3;
+                }
+                return baseline;
+              })
+              .attr('y2', function(d) {
+                var displacement = 3;
+                var stepsize = 7;
+                if (d.code[3] === "frame") {
+                  displacement = 3 * stepsize;
+                } else if (d.code[3] === "relation") {
+                  displacement = 2 * stepsize;
+                } else if (d.code[3] === "element") {
+                  displacement = stepsize;
+                }
+
+                if (d.code[4] === "problem") {
+                  return baseline + displacement;
+                }
+                return baseline - displacement
+              })
+              .attr('stroke', function(d) {
+                if (d.code[4] === "problem") {
+                  return $yellow;
+                } else if (d.code[4] === "solution") {
+                  return $blue
+                }
+                return $greyLighter;
+              })
+              .attr("stroke-width", "1px")
+              // .on("mouseover", mouseover)
+              // .on("mousemove", mousemove)
+              // .on("mouseleave", mouseleave)
+    }).bind(this));
+    console.log(this)
   }
-
 }
+
+var timeline = new Timeline({
+  filename: "s4",
+  container: ".timeline-view"
+})
+timeline.create()
 
 // D3 visualisation
 
@@ -92,7 +168,7 @@ var svg = d3.select("svg"),
     bottom: 30,
     left: 40
   },
-  width = svg.node().getBoundingClientRect().width - margin.left - margin.right,
+  width = 80,//svg.node().getBoundingClientRect().width - margin.left - margin.right,
   height = 1500,//svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
   height2 = (fileNames.length * 15) //svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
