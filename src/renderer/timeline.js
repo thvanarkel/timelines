@@ -69,6 +69,7 @@ class Timeline {
   container;
   #height = 100;
   #width = 900;
+  margin = { top: 0, right: 0, bottom: 0, left: 0 }
   // endTime;
   // nBars;
   animationDuration = 200
@@ -82,6 +83,7 @@ class Timeline {
   }
 
   static parseTime = d3.timeParse("%H:%M:%S");
+  static formatTime = d3.timeFormat("%H:%M:%S");
 
   scales = {
         time: d3.scaleTime(),
@@ -102,8 +104,11 @@ class Timeline {
                     .html('Scale:\n<label><input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label>')
 
       svg = this.container.append("svg")
-                          .attr("height", this.#height)
-                          .attr("width", this.#width)
+                          .attr("height", this.#height - this.margin.top - this.margin.bottom)
+                          .attr("width", this.#width - this.margin.left - this.margin.right)
+                          .style("position", "relative")
+                          .style("margin-left", this.margin.left)
+                          .style("margin-top", this.margin.top)
       timeline = svg.append("g")
 
       console.log(this.container)
@@ -172,7 +177,7 @@ class Timeline {
 
       this.domXAxis = svg.append("g")
           .attr("class", "axis axis--x")
-          .attr("transform", "translate(0," + this.height + ")")
+          // .attr("transform", "translate(0," + this.#height + ")")
           .call(this.xAxis);
 
       this.controls.selectAll("input").on("click", this.changeXScale.bind(this));

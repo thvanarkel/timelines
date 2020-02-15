@@ -9599,7 +9599,6 @@ body {
 }
 .timeline-view .timeline {
   width: 900px;
-  height: 100px;
   border: 1px solid black;
 }
 .timeline-view .timeline line {
