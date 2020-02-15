@@ -231,7 +231,7 @@ class Timeline {
   export() {
     var svgString = getSVGString(this.svg.node());
     var path = dialog.showOpenDialogSync({ properties: ['openDirectory'] })
-    path += "/timeline.svg"
+    path += "/timeline" + this.filename + ".svg"
     fs.writeFile(path, svgString, (err) => {
       // throws an error, you could also catch it here
     if (err) throw err;
