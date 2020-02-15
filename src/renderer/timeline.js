@@ -95,10 +95,6 @@ class Timeline {
                          .append("div")
                          .attr("class", "timeline")
 
-      this.controls = this.container.append("form")
-                    .attr("class", "controls")
-                    .html('Scale:\n<label><input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
-
       this.svg = this.container.append("svg")
                           .attr("height", this.#height - this.margin.top - this.margin.bottom)
                           .attr("width", this.#width - this.margin.left - this.margin.right)
@@ -106,6 +102,10 @@ class Timeline {
                           .style("margin-left", this.margin.left)
                           .style("margin-top", this.margin.top)
       timeline = this.svg.append("g")
+
+      this.controls = this.container.append("div")
+                    .attr("class", "controls")
+                    .html('<span class="timescale" value="time"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
 
       console.log(this.container)
 
@@ -176,9 +176,9 @@ class Timeline {
           // .attr("transform", "translate(0," + this.#height + ")")
           .call(this.xAxis);
 
-      this.controls.selectAll("input").on("click", this.changeXScale.bind(this));
-      this.controls.selectAll("button").on("click", this.export.bind(this));
-
+      // this.controls.selectAll("input").on("click", this.changeXScale.bind(this));
+      this.controls.selectAll(".export").on("click", this.export.bind(this));
+      this.controls.selectAll(".timescale").on("click", this.changeXScale.bind(this))
     }).bind(this));
     console.log(this)
   }
@@ -198,12 +198,21 @@ class Timeline {
   }
 
   changeXScale() {
+
     this.setXScale();
     this.redraw();
   }
 
   setXScale() {
-    this.scaleType = this.controls.select("input:checked").node().value;
+    var control = this.controls.select(".timescale")
+    var v = control.attr("value") === "time" ? "linear" : "time"
+    control.attr("value", v)
+    if (v === "time") {
+      control.select("i").html("timer")
+    } else {
+      control.select("i").html("timer_off")
+    }
+    this.scaleType = v;
     this.xScale = this.scales[this.scaleType];
     this.xScale.range([0, this.#width]);
     console.log(this.nBars)

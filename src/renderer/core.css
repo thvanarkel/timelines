@@ -9599,8 +9599,22 @@ body {
 .timeline-view .timeline {
   width: 100%;
   border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
-.timeline-view .timeline line {
+.timeline-view .timeline .controls span {
+  margin-right: 5px;
+  cursor: pointer;
+}
+.timeline-view .timeline .controls span i {
+  font-size: 20px;
+  color: #797986;
+}
+.timeline-view .timeline svg {
+  width: 100%;
+}
+.timeline-view .timeline svg line {
   shape-rendering: crispEdges;
 }
 .timeline-view .wrapper {
