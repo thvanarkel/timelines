@@ -68,51 +68,76 @@ class Timeline {
   filename;
   container;
   #height = 100;
-  #width = 750;
-  x;
+  #width = 900;
+  // endTime;
+  // nBars;
+  animationDuration = 200
+  // xScale;
+  // lines;
+  // bars;
 
   constructor(opts) {
     this.filename = opts.filename;
     this.container = opts.container;
   }
 
-  create() {
+  static parseTime = d3.timeParse("%H:%M:%S");
+
+  scales = {
+        time: d3.scaleTime(),
+        linear: d3.scaleLinear()
+    }
+
+
+
+  init() {
     d3.csv("./data/" + this.filename + ".csv", type).then((function(data) {
 
-      svg = d3.select(this.container)
-              .append("div")
-              .attr("class", "timeline")
-              .append("svg")
-              .attr("height", this.#height)
-              .attr("width", this.#width)
+      this.container = d3.select(this.container)
+                         .append("div")
+                         .attr("class", "timeline")
+
+      this.controls = this.container.append("form")
+                    .attr("class", "controls")
+                    .html('Scale:\n<label><input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label>')
+
+      svg = this.container.append("svg")
+                          .attr("height", this.#height)
+                          .attr("width", this.#width)
       timeline = svg.append("g")
 
-      this.x = d3.scaleTime().range([0, this.#width])
-      this.x.domain([0, data.length])
+      console.log(this.container)
+
+
+
+      this.endTime = d3.max(data, function(d) {
+        return d.timeEnd;
+      })
+      this.nBars = data.length
+      this.setXScale();
+      this.xScale.range([0, this.#width]);
 
       var baseline = 40;
 
-      var scaleX = this.x
+      var scaleX = this.xScale
 
-      timeline.selectAll("line")
+      this.bars = timeline.selectAll("line")
               .data(data)
               .enter()
               .append("line")
-              .attr("class", "episode")
-              .attr('x1', function(d, i) {
-                return scaleX(i)
-                // return (i * 5);
-              })
-              .attr('x2', function(d, i) {
-                return scaleX(i)
-                // return (i * 5);
-              })
-              .attr('y1', function(d) {
+              .attr("class", "bar")
+              .attr('x1', (function(d, i) {
+                return this.XPosition(d, i)
+              }).bind(this))
+              .attr('x2', (function(d, i) {
+                return this.XPosition(d, i)
+              }).bind(this))
+              .attr('y1', (function(d) {
                 if (d.code[1] === "none") {
                   return baseline + 3;
                 }
                 return baseline;
-              })
+              }).bind(this))
               .attr('y2', function(d) {
                 var displacement = 3;
                 var stepsize = 7;
@@ -141,19 +166,196 @@ class Timeline {
               // .on("mouseover", mouseover)
               // .on("mousemove", mousemove)
               // .on("mouseleave", mouseleave)
+
+      this.xAxis = d3.axisBottom()
+          .scale(this.xScale);
+
+      this.domXAxis = svg.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + this.height + ")")
+          .call(this.xAxis);
+
+      this.controls.selectAll("input").on("click", this.changeXScale.bind(this));
+
     }).bind(this));
     console.log(this)
   }
+
+  redraw() {
+    this.domXAxis.transition()
+        .duration(this.animationDuration)
+        .call(this.xAxis.scale(this.xScale));
+    this.bars.transition()
+      .duration(this.animationDuration)
+      .attr("x1", (function(d, i) {
+        return this.XPosition(d, i)
+      }).bind(this))
+      .attr("x2", (function(d, i) {
+        return this.XPosition(d, i)
+      }).bind(this))
+  }
+
+  changeXScale() {
+    this.setXScale();
+    this.redraw();
+  }
+
+  setXScale() {
+    this.scaleType = this.controls.select("input:checked").node().value;
+    this.xScale = this.scales[this.scaleType];
+    this.xScale.range([0, this.#width]);
+    console.log(this.nBars)
+    if (this.scaleType === "linear") {
+      this.xScale.domain([0, this.nBars])
+    } else if (this.scaleType === "time") {
+      this.xScale.domain([parseTime("0:0:0"), this.endTime]);
+    }
+  }
+
+  XPosition(d, i) {
+    if (this.scaleType === "time") {
+      return this.xScale(d.timeEnd)
+    } else if (this.scaleType === "linear") {
+      return this.xScale(i)
+    }
+  }
+
+
 }
+
+class Chart {
+    margin = { top: 40, right: 25, bottom: 20, left: 25 }
+
+    animationDuration = 400
+
+    scales = {
+        power2: d3.scalePow().exponent(2),
+        linear: d3.scaleLinear(),
+        sqrt:   d3.scalePow().exponent(0.5),
+        log2:   d3.scaleLog().base(2),
+        log10:  d3.scaleLog().base(10),
+        time:   d3.scaleTime()
+    }
+
+    constructor(container, data) {
+        this.el = d3.select(".js-chart")
+            .attr("width", container.width)
+            .attr("height", container.height);
+
+        this.width  = container.width - this.margin.left - this.margin.right;
+        this.height = container.height - this.margin.top - this.margin.bottom;
+
+        this.adaptScales();
+        this.setXScale();
+        this.draw(data);
+
+        d3.selectAll(".js-chart-container input").on("click", this.changeXScale.bind(this));
+    }
+
+    draw(data) {
+        var mainGroup, series;
+
+        mainGroup = this.el.append("g")
+            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+
+        series = mainGroup.selectAll(".series").data(data)
+            .enter().append("g")
+                .attr("class", function (d) { return "series " + d.name; });
+
+        this.points = series.selectAll(".point").data((function (d) {
+          console.log(this.scaleType)
+          return d.points;
+        }).bind(this))
+            .enter().append("line")
+                .attr("class", "point")
+                .attr("x1", this.xScale)
+                .attr("x2", this.xScale)
+                .attr("y1", this.height / 2 - 10)
+                .attr("y2", this.height / 2 + 10)
+                .attr("stroke-width", "1px")
+                .attr("stroke", "red")
+                // .attr("r", 6);
+
+        this.points.append("title")
+           .text(String);
+
+        this.xAxis = d3.axisBottom()
+            .scale(this.xScale);
+
+        this.domXAxis = mainGroup.append("g")
+            .attr("class", "axis axis--x")
+            // .attr("transform", "translate(0," + this.height + ")")
+            .call(this.xAxis);
+    }
+
+    redraw() {
+        this.domXAxis.transition()
+            .duration(this.animationDuration)
+            .call(this.xAxis.scale(this.xScale));
+        this.points.transition()
+            .duration(this.animationDuration)
+            .attr("x1", this.xScale)
+            .attr("x2", this.xScale);
+    }
+
+    adaptScales() {
+        Object.keys(this.scales).forEach(function (scaleType) {
+            this.scales[scaleType]
+                .domain([1, 1000])
+                .range([0, this.width]);
+        }, this);
+    }
+
+    changeXScale() {
+
+        this.setXScale();
+        console.log(this.scaleType)
+        this.redraw();
+    }
+
+    setXScale() {
+        this.scaleType = this.controls.select("input:checked").node().value;
+
+        this.xScale = this.scales[this.scaleType];
+    }
+};
+
+var container = {
+    width: document.querySelector(".timeline-view").clientWidth,
+    height: 300
+};
+
+var parseTime = d3.timeParse("%H:%M:%S");
+
+var data = [
+    {
+        name: "linear",
+        points: [300, 400, 500, 600],
+        times: [parseTime("00:30:00"), parseTime("00:40:00"), parseTime("00:50:00"), parseTime("01:00:00")]
+    },
+    {
+        name: "pow",
+        points: [1, 10, 100, 1000],
+        times: [parseTime("00:01:00"), parseTime("00:10:00"), parseTime("01:20:00"), parseTime("01:30:00")]
+    }
+];
+
+// d3.csv("./data/p1.csv", type).then(function(data) {
+  // var chart = new Chart(container, data)
+// });
+//
+// var chart = new Timeline()
+// chart.init(container, data);
+
 
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
-for (var i = 0; i < fileNames.length; i++) {
+for (var i = 1; i < 3; i++) {
   var timeline = new Timeline({
     filename: fileNames[i],
     container: ".timeline-view"
   })
-  timeline.create()
+  timeline.init()
 }
 
 

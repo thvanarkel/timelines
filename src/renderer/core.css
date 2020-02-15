@@ -9518,6 +9518,7 @@ body {
   flex: 1;
   width: 20vw;
   max-width: 250px;
+  display: none;
 }
 .sidebar .sidebar-contents {
   position: fixed;
@@ -9548,6 +9549,10 @@ body {
 .sidebar .sidebar-contents .indicator.yellow {
   background-color: #fff599;
   border: 1px solid #ffe600;
+}
+
+.focus {
+  display: none;
 }
 
 .coding-scheme .coding-group .code-type .code-indicator {
@@ -9593,9 +9598,12 @@ body {
   flex: 3;
 }
 .timeline-view .timeline {
-  width: 750px;
+  width: 900px;
   height: 100px;
   border: 1px solid black;
+}
+.timeline-view .timeline line {
+  shape-rendering: crispEdges;
 }
 .timeline-view .wrapper {
   overflow: scroll;
