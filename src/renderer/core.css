@@ -9622,7 +9622,7 @@ body {
   display: none;
 }
 .timeline-view .axis {
-  stroke: black;
+  stroke: #E2E2E9;
   stroke-width: 0.3;
 }
 
@@ -9662,11 +9662,11 @@ body {
 
 .axis path,
 .axis line {
-  stroke: black;
+  stroke: #E2E2E9;
 }
 
 .axis text {
-  fill: black;
+  fill: #E2E2E9;
 }
 
 .area {

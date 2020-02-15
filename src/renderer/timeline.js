@@ -105,7 +105,7 @@ class Timeline {
 
       this.controls = this.container.append("div")
                     .attr("class", "controls")
-                    .html('<span class="timescale" value="time"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
+                    .html('<span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
 
       console.log(this.container)
 
@@ -115,10 +115,9 @@ class Timeline {
         return d.timeEnd;
       })
       this.nBars = data.length
-      this.setXScale();
-      this.xScale.range([0, this.#width]);
 
-      var baseline = 40;
+
+      var baseline = 0.5 * this.#height;
 
       var scaleX = this.xScale
 
@@ -168,6 +167,72 @@ class Timeline {
               // .on("mousemove", mousemove)
               // .on("mouseleave", mouseleave)
 
+      timeline.append("text")
+        .text( function(d) {
+          return fileNames[i];
+        })
+        .attr('x', 0)
+        .attr('y', 33)
+        .attr("font-size", "10px")
+
+        var labels = ["FR", "RE", "EL", "", "EL", "RE", "FR"];
+
+      var l = timeline.append("g");
+        for (var i = 0; i < labels.length; i++) {
+          var a = i < 3 ? 5 : 0
+          l.append("text")
+            .text(labels[i])
+            .attr('x', 10)
+            .attr('y', 29 + (i * 7) + a)
+            .attr("font-size", "7px")
+          l.append("line")
+            .attr('x1', 10)
+            .attr('x2', this.#width)
+            .attr('y1', 29 + (i * 7))
+            .attr('y2', 29 + (i * 7))
+            .attr("stroke", "black")
+            .attr("stroke-width", 0.1)
+        }
+        l.append("line")
+          .attr('x1', 25)
+          .attr('x2', 25)
+          .attr('y1', 29)
+          .attr('y2', 29 + ((labels.length - 1) * 7))
+          .attr("stroke", "black")
+          .attr("stroke-width", 1)
+
+
+
+        // l.append("line")
+        //   .attr("class", "axis")
+        //   .attr("x1", 20)
+        //   .attr("x2", width)
+        //   .attr("y1", 30)
+        //   .attr("y2", 30)
+        //   .attr("stroke", "black")
+        //   .attr("stroke-width", 0.1)
+
+        // timeline.append("text")
+        //   .text("FR")
+        //   .attr('x', 20)
+        //   .attr('y', 25)
+        //   .attr("font-size", "7px")
+        //
+        // timeline.append("text")
+        //   .text("RE")
+        //   .attr('x', 20)
+        //   .attr('y', 39)
+        //   .attr("font-size", "7px")
+        //
+        // timeline.append("text")
+        //   .text("EL")
+        //   .attr('x', 20)
+        //   .attr('y', 39)
+        //   .attr("font-size", "7px")
+
+      this.setXScale();
+      this.xScale.range([0, this.#width]);
+
       this.xAxis = d3.axisBottom()
           .scale(this.xScale);
 
@@ -175,6 +240,10 @@ class Timeline {
           .attr("class", "axis axis--x")
           // .attr("transform", "translate(0," + this.#height + ")")
           .call(this.xAxis);
+
+      this.adjustScale()
+      this.redraw()
+
 
       // this.controls.selectAll("input").on("click", this.changeXScale.bind(this));
       this.controls.selectAll(".export").on("click", this.export.bind(this));
@@ -200,6 +269,7 @@ class Timeline {
   changeXScale() {
 
     this.setXScale();
+    this.adjustScale();
     this.redraw();
   }
 
@@ -207,19 +277,24 @@ class Timeline {
     var control = this.controls.select(".timescale")
     var v = control.attr("value") === "time" ? "linear" : "time"
     control.attr("value", v)
-    if (v === "time") {
+    this.scaleType = v;
+    if (this.scaleType === "time") {
       control.select("i").html("timer")
-    } else {
+    } else if (this.scaleType === "linear") {
       control.select("i").html("timer_off")
     }
-    this.scaleType = v;
     this.xScale = this.scales[this.scaleType];
     this.xScale.range([0, this.#width]);
     console.log(this.nBars)
-    if (this.scaleType === "linear") {
-      this.xScale.domain([0, this.nBars])
-    } else if (this.scaleType === "time") {
+  }
+
+  adjustScale() {
+    if (this.scaleType === "time") {
+      this.xAxis.tickFormat(formatTime)
       this.xScale.domain([parseTime("0:0:0"), this.endTime]);
+    } else if (this.scaleType === "linear") {
+      this.xAxis.tickFormat(d3.format("0"))
+      this.xScale.domain([0, this.nBars])
     }
   }
 

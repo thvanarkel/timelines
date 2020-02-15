@@ -254,7 +254,7 @@ $bubble-height: 10px;
 
   .axis {
     // stroke: $gray-800;
-    stroke: black;
+    stroke: #E2E2E9;
     stroke-width: 0.3;
   }
 }
@@ -308,11 +308,11 @@ $bubble-height: 10px;
 
 .axis path,
 .axis line {
-  stroke: black;
+  stroke: #E2E2E9;
 }
 
 .axis text {
-  fill: black;
+  fill: #E2E2E9;
 }
 
 .area {
