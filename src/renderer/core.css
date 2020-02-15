@@ -9518,7 +9518,6 @@ body {
   flex: 1;
   width: 20vw;
   max-width: 250px;
-  display: none;
 }
 .sidebar .sidebar-contents {
   position: fixed;
@@ -9598,7 +9597,7 @@ body {
   flex: 3;
 }
 .timeline-view .timeline {
-  width: 900px;
+  width: 100%;
   border: 1px solid black;
 }
 .timeline-view .timeline line {

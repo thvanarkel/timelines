@@ -67,17 +67,11 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
 );
 
 class Timeline {
-  filename;
-  container;
+  margin = { top: 0, right: 5, bottom: 0, left: 5 }
   #height = 100;
-  #width = 900;
-  margin = { top: 0, right: 0, bottom: 0, left: 0 }
-  // endTime;
-  // nBars;
+  #width = d3.select('.timeline-view').node().getBoundingClientRect().width - this.margin.left - this.margin.right;
   animationDuration = 200
-  // xScale;
-  // lines;
-  // bars;
+
 
   constructor(opts) {
     this.filename = opts.filename;
@@ -231,7 +225,7 @@ class Timeline {
   export() {
     var svgString = getSVGString(this.svg.node());
     var path = dialog.showOpenDialogSync({ properties: ['openDirectory'] })
-    path += "/timeline" + this.filename + ".svg"
+    path += "/timeline-" + this.filename + ".svg"
     fs.writeFile(path, svgString, (err) => {
       // throws an error, you could also catch it here
     if (err) throw err;
@@ -368,7 +362,7 @@ var data = [
 
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
-for (var i = 1; i < 3; i++) {
+for (var i = 1; i < fileNames.length; i++) {
   var timeline = new Timeline({
     filename: fileNames[i],
     container: ".timeline-view"
