@@ -34,7 +34,6 @@ var coding_scheme = [
   [16, "manipulation2", "manipulation", "abduction", "element", "solution"]
 ];
 
-
 // function createTooltips() {
 //   if (!SVGElement.prototype.contains) {
 //     SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
@@ -43,13 +42,6 @@ var coding_scheme = [
 //   console.log(document.querySelectorAll('.bar'))
 //   tippy(document.querySelectorAll('.bar'));
 // }
-
-
-
-
-
-
-// var indicator = document.getElementsByClassName('code-indicator')[0];
 
 Array.from(document.querySelectorAll(".code-indicator")).forEach(
     function(element, index, array) {
@@ -100,8 +92,6 @@ class Timeline {
         linear: d3.scaleLinear()
     }
 
-
-
   init() {
     d3.csv("./data/" + this.filename + ".csv", type).then((function(data) {
 
@@ -121,8 +111,6 @@ class Timeline {
       this.controls = this.container.append("div")
                     .attr("class", "controls")
                     .html('<span class="info"><i class="material-icons">info</i></span><span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
-
-
 
       this.calculateStats(data)
       console.log(this.stats)
@@ -359,14 +347,6 @@ class Timeline {
 
 var parseTime = d3.timeParse("%H:%M:%S");
 
-// d3.csv("./data/p1.csv", type).then(function(data) {
-  // var chart = new Chart(container, data)
-// });
-//
-// var chart = new Timeline()
-// chart.init(container, data);
-
-
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
 for (var i = 1; i < fileNames.length; i++) {
@@ -377,11 +357,7 @@ for (var i = 1; i < fileNames.length; i++) {
   timeline.init()
 }
 
-
-
-
 // D3 visualisation
-
 var svg = d3.select("svg"),
   margin = {
     top: 20,
