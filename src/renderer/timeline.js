@@ -90,14 +90,29 @@ class Timeline {
                          .append("div")
                          .attr("class", "timeline")
 
+     var zoom = d3.zoom()
+       .scaleExtent([1, 10])
+       .on("zoom", this.update.bind(this));
+
       this.svg = this.container.append("svg")
                           .attr("height", this.#height - this.margin.top - this.margin.bottom)
                           .attr("width", this.#width - this.margin.left - this.margin.right)
                           .style("position", "relative")
                           .style("margin-left", this.margin.left)
                           .style("margin-top", this.margin.top)
+                          .call(zoom);
+
       timeline = this.svg.append("g")
                           .attr("transform", "translate(40 0)")
+
+
+      // var clip = this.svg.append("defs").append("svg:clipPath")
+      //     .attr("id", "clip")
+      //     .append("svg:rect")
+      //     .attr("width", this.#width )
+      //     .attr("height", this.#height )
+      //     .attr("x", 0)
+      //     .attr("y", 0);
 
       this.controls = this.container.append("div")
                     .attr("class", "controls")
@@ -176,24 +191,36 @@ class Timeline {
                 }
                 return $greyLighter;
               })
-              .attr("stroke-width", "1px")
+              .attr("stroke-width", "1.5px")
               // .on("mouseover", mouseover)
               // .on("mousemove", mousemove)
               // .on("mouseleave", mouseleave)
+
+      // var zoom = d3.zoom()
+      //   .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
+      //   .extent([[0, 0], [this.#width, this.#height]])
+      //   .on("zoom", this.update.bind(this));
+
+
+
+      // this.svg.append("rect")
+      //   .attr("width", this.#width)
+      //   .attr("height", this.#height)
+      //   .style("fill", "none")
+      //   .style("pointer-events", "all")
+      //   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      //   .call(zoom);
 
       if (!SVGElement.prototype.contains) {
         SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
       }
       d3.selectAll('.bar').select(function(d, i) {
-        var tip = tippy(this.previousElementSibling, {
+        var tip = tippy(this, {
           content: "<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + d.code[1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>",
           theme: "tooltip",
-          delay: [200, 200]
+          delay: [50, 50]
         });
       });
-      // tippy.createSingleton(tooltips, {delay: 1000});
-
-
 
       var labels = ["FR", "RE", "EL", "", "EL", "RE", "FR"];
 
@@ -202,8 +229,33 @@ class Timeline {
       l.append("text")
         .text(this.filename)
         .attr('x', 0)
-        .attr('y', 55)
-        .attr("font-size", "10px")
+        .attr('y', 17)
+        .attr("font-size", "13px")
+        .attr("font-weight", "bold")
+
+      l.append("text")
+        .text("p")
+        .attr('x', 8)
+        .attr('y', 39)
+        .attr("font-size", "8px")
+
+      l.append("text")
+        .text("s")
+        .attr('x', 8)
+        .attr('y', 67)
+        .attr("font-size", "8px")
+
+      l.append('g')
+       .attr("stroke", "black")
+       .attr("fill", "none")
+       .attr("stroke-width", "0.5")
+       .html('<path d="M 18 29 l -3 0 l 0 14 l 3 0"/>')
+
+      l.append('g')
+       .attr("stroke", "black")
+       .attr("fill", "none")
+       .attr("stroke-width", "0.5")
+       .html('<path d="M 18 57 l -3 0 l 0 14 l 3 0"/>')
 
       for (var i = 0; i < labels.length; i++) {
         var a = i < 3 ? 5 : 0
@@ -294,6 +346,29 @@ class Timeline {
       }).bind(this))
   }
 
+  update() {
+
+    var newX = d3.event.transform.rescaleX(x);
+    console.log(this)
+    // update axes with these new boundaries
+    // this.domXAxis = d3.event.transform.rescaleX(x2)
+
+    this.xScale = d3.event.transform.rescaleX(this.x2)
+
+    this.xAxis.scale(this.xScale);
+    this.domXAxis.call(this.xAxis);
+
+    // update circle position
+
+    this.bars
+      .attr("x1", (function(d, i) {
+        return this.XPosition(d, i)
+      }).bind(this))
+      .attr("x2", (function(d, i) {
+        return this.XPosition(d, i)
+      }).bind(this))
+  }
+
   changeXScale() {
     this.setXScale();
     this.adjustScale();
@@ -312,6 +387,7 @@ class Timeline {
     }
     this.xScale = this.scales[this.scaleType];
     this.xScale.range([0, this.#width - 40]);
+
   }
 
   adjustScale() {
@@ -322,6 +398,7 @@ class Timeline {
       this.xAxis.tickFormat(d3.format("0"))
       this.xScale.domain([0, this.nBars])
     }
+    this.x2 = this.xScale.copy();
   }
 
   XPosition(d, i) {
