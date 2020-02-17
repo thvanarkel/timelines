@@ -9667,8 +9667,12 @@ body {
 .tippy-tooltip.stats-theme .tippy-content div li#heading {
   font-size: 10px;
 }
+.tippy-tooltip.stats-theme .tippy-content div li .space {
+  font-size: 9px;
+}
 .tippy-tooltip.stats-theme .tippy-content div li.l1 {
   font-weight: 500;
+  font-size: 12px;
 }
 .tippy-tooltip.stats-theme .tippy-content div li.l2 {
   padding-left: 5px;

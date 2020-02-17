@@ -128,12 +128,12 @@ class Timeline {
       console.log(this.stats)
 
       var constructVariableString = function(name, level, values, total) {
-        return str = '<li class="l' + level + '">' + name + '<span class="value">' + ((values['problem'] || 0) + (values['solution'] || 0)) + '(' + (values['problem'] || 0) + "/" + (values['solution'] || 0) + ')<span class="total">' + "/" + total + '</span></span></li>'
+        return str = '<li class="l' + level + '">' + name + '<span class="value">' + ((values['problem'] || 0) + (values['solution'] || 0)) + '<i class="space">' + '(' + (values['problem'] || 0) + "/" + (values['solution'] || 0) + ')' + '</i>' + '<span class="total">' + "/"  + total + '</span></span></li>'
       }
       // console.log(this.stats['levels']['frame']['codes']['regression'])
 
       console.log(this.stats['levels'])
-      var str = '<div><li class="l1" id="heading">name<span class="value">number(problem/solution)<span class="total">/total</span>'
+      var str = '<div><li class="l1" id="heading">name<span class="value">number<i = "space">(problem/solution)</i><span class="total">/total</span>'
       str += constructVariableString("abduction", 1, this.stats, this.stats['total']);
       // str += constructVariableString("Frame", 2, this.stats['frame']['codes']['regression'], "");
       // str += constructVariableString("Regression", 3, this.stats['frame']['codes']['regression'], "");
