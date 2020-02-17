@@ -144,7 +144,6 @@ class Timeline {
       })
       this.nBars = data.length
 
-
       var baseline = 0.5 * this.#height;
 
       var scaleX = this.xScale
@@ -294,7 +293,6 @@ class Timeline {
   }
 
   changeXScale() {
-
     this.setXScale();
     this.adjustScale();
     this.redraw();
