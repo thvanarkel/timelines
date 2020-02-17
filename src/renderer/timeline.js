@@ -1,6 +1,7 @@
 'use strict'
 
 var d3 = require("d3");
+var d3array = require("d3-array");
 var fs = require("fs");
 const { dialog } = require('electron').remote
 
@@ -11,27 +12,42 @@ var $yellow = d3.rgb("#f9a800"); // #FEBC2D
 
 // var fileNames = ["s7"];
 // Coding coding scheme
-// [index, code-name, inference-type, inference-subtype, space]
+// [index, code, code-name, inference-type, inference-subtype, space]
 
 var coding_scheme = [
-  [0, "none", "none", "", ""],
-  [1, "deduction", "deduction", "", ""],
-  [2, "induction", "induction", "", ""],
-  [3, "regression1", "abduction", "frame", "problem"],
-  [4, "regression2", "abduction", "frame", "solution"],
-  [5, "transformation1", "abduction", "frame", "problem"],
-  [6, "transformation2", "abduction", "frame", "solution"],
-  [7, "proposition1", "abduction", "frame", "problem"],
-  [8, "proposition2", "abduction", "relation", "solution"],
-  [9, "composition1", "abduction", "relation", "problem"],
-  [10, "composition2", "abduction", "relation", "solution"],
-  [11, "prioritization1", "abduction", "relation", "problem"],
-  [12, "prioritization2", "abduction", "relation", "solution"],
-  [13, "decomposition1", "abduction", "element", "problem"],
-  [14, "decomposition2", "abduction", "element", "solution"],
-  [15, "manipulation1", "abduction", "element", "problem"],
-  [16, "manipulation2", "abduction", "element", "solution"]
+  [0, "none", "none", "none", "none", "none"],
+  [1, "deduction", "deduction", "deduction", "", ""],
+  [2, "induction", "induction", "induction", "", ""],
+  [3, "regression1", "regression", "abduction", "frame", "problem"],
+  [4, "regression2", "regression", "abduction", "frame", "solution"],
+  [5, "transformation1", "transformation", "abduction", "frame", "problem"],
+  [6, "transformation2", "transformation", "abduction", "frame", "solution"],
+  [7, "proposition1", "proposition", "abduction", "frame", "problem"],
+  [8, "proposition2", "proposition", "abduction", "relation", "solution"],
+  [9, "composition1", "composition", "abduction", "relation", "problem"],
+  [10, "composition2", "composition", "abduction", "relation", "solution"],
+  [11, "prioritization1", "prioritization", "abduction", "relation", "problem"],
+  [12, "prioritization2", "prioritization", "abduction", "relation", "solution"],
+  [13, "decomposition1", "decomposition", "abduction", "element", "problem"],
+  [14, "decomposition2", "decomposition", "abduction", "element", "solution"],
+  [15, "manipulation1", "manipulation", "abduction", "element", "problem"],
+  [16, "manipulation2", "manipulation", "abduction", "element", "solution"]
 ];
+
+
+// function createTooltips() {
+//   if (!SVGElement.prototype.contains) {
+//     SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
+//   }
+//
+//   console.log(document.querySelectorAll('.bar'))
+//   tippy(document.querySelectorAll('.bar'));
+// }
+
+
+
+
+
 
 // var indicator = document.getElementsByClassName('code-indicator')[0];
 
@@ -46,9 +62,7 @@ Array.from(document.querySelectorAll(".code-indicator")).forEach(
           if (l === "inference-type") {
             d3.selectAll('.bubble')
               .each(function(d) {
-                console.log(d.code[2])
-                console.log(l)
-                if (d.code[2] === el.parentElement.getAttribute("code")) {
+                if (d.code[3] === el.parentElement.getAttribute("code")) {
                   d3.select(this)
                   .attr("display", o)
                 }
@@ -71,7 +85,7 @@ class Timeline {
   #height = 100;
   #width = d3.select('.timeline-view').node().getBoundingClientRect().width - this.margin.left - this.margin.right;
   animationDuration = 200
-
+  stats = {}
 
   constructor(opts) {
     this.filename = opts.filename;
@@ -106,10 +120,48 @@ class Timeline {
 
       this.controls = this.container.append("div")
                     .attr("class", "controls")
-                    .html('<span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
+                    .html('<span class="info"><i class="material-icons">info</i></span><span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
 
-      console.log(this.container)
 
+
+      this.calculateStats(data)
+      console.log(this.stats)
+
+      var constructVariableString = function(name, level, values, total) {
+        return str = '<li class="l' + level + '">' + name + '<span class="value">' + ((values['problem'] || 0) + (values['solution'] || 0)) + '(' + (values['problem'] || 0) + "/" + (values['solution'] || 0) + ')<span class="total">' + "/" + total + '</span></span></li>'
+      }
+      // console.log(this.stats['levels']['frame']['codes']['regression'])
+
+      console.log(this.stats['levels'])
+      var str = '<div><li class="l1" id="heading">name<span class="value">number(problem/solution)<span class="total">/total</span>'
+      str += constructVariableString("abduction", 1, this.stats, this.stats['total']);
+      // str += constructVariableString("Frame", 2, this.stats['frame']['codes']['regression'], "");
+      // str += constructVariableString("Regression", 3, this.stats['frame']['codes']['regression'], "");
+      // str += constructVariableString("Transformation", 3, this.stats['frame']['codes']['regression'], "");
+      // str += constructVariableString("Proposition", 3, this.stats['frame']['codes']['regression'], "");
+      // str += constructVariableString("Relation", 2, this.stats['frame']['codes']['regression'], "");
+      for (var l in this.stats['levels']) {
+        if (l !== "none") {
+          str += constructVariableString(l, 2, this.stats['levels'][l], this.stats['total'] - this.stats['none']);
+          for (var t in this.stats['levels'][l]['codes']) {
+            str += constructVariableString(t, 3, this.stats['levels'][l]['codes'][t], (this.stats['levels'][l]['problem'] || 0) + (this.stats['levels'][l]['solution'] || 0));
+          }
+        }
+      }
+      str += '</div>'
+
+
+      console.log(str);
+
+      tippy(this.controls.select('.info').node(), {
+        theme: "stats",
+        delay: [200, 200],
+        content: str
+      });
+
+       // + this.stats['total'] + '</span>
+      // <span class="l2">Abduction</span><span></span>
+      // <span class="l3">Abduction</span><span></span>
 
 
       this.endTime = d3.max(data, function(d) {
@@ -135,30 +187,30 @@ class Timeline {
               }).bind(this))
               .attr('y1', (function(d) {
                 if (d.code[1] === "none") {
-                  return baseline + 3;
+                  return baseline - 3;
                 }
                 return baseline;
               }).bind(this))
               .attr('y2', function(d) {
                 var displacement = 3;
                 var stepsize = 7;
-                if (d.code[3] === "frame") {
+                if (d.code[4] === "frame") {
                   displacement = 3 * stepsize;
-                } else if (d.code[3] === "relation") {
+                } else if (d.code[4] === "relation") {
                   displacement = 2 * stepsize;
-                } else if (d.code[3] === "element") {
+                } else if (d.code[4] === "element") {
                   displacement = stepsize;
                 }
 
-                if (d.code[4] === "problem") {
-                  return baseline + displacement;
+                if (d.code[5] === "problem") {
+                  return baseline - displacement;
                 }
-                return baseline - displacement
+                return baseline + displacement
               })
               .attr('stroke', function(d) {
-                if (d.code[4] === "problem") {
+                if (d.code[5] === "problem") {
                   return $yellow;
-                } else if (d.code[4] === "solution") {
+                } else if (d.code[5] === "solution") {
                   return $blue
                 }
                 return $greyLighter;
@@ -251,7 +303,45 @@ class Timeline {
       this.controls.selectAll(".export").on("click", this.export.bind(this));
       this.controls.selectAll(".timescale").on("click", this.changeXScale.bind(this))
     }).bind(this));
-    console.log(this)
+  }
+
+  calculateStats(d) {
+    console.log(d);
+    // var abductions = d.filter(function(d) {
+    var values = d3array.rollups(d, v => v.length, d => d.code[4], d => d.code[2], d => d.code[5])
+    // var data = [ {name: "jim",   amount: "34.0",   date: "11/12/2015"}, {name: "carl",  amount: "120.11", date: "11/12/2015"}, {name: "stacy", amount: "12.01",  date: "01/04/2016"}, {name: "stacy", amount: "34.05",  date: "01/04/2016"}]
+    // var count = d3array.group(data, d => d.name)
+      // .group(function(d) { return d.code[5]; })
+      // .rollup(function(v) { return v.length; })
+      // .entries(d);
+    values = Array.from(values, ([key, value]) => ({key, value}));
+    var pc = 0, sc = 0, count = 0;
+
+    var l = {}
+    for (var ty of values) { // iterate over inference_sub_types
+      var st = {}
+      st.codes = {}
+      var tt = 0
+      for (var c of ty.value) { // iterate over codes
+        var e = {}
+        var t = 0
+        for (var s of c[1]) { // iterate over space
+          this.stats['total'] = (this.stats['total'] || 0) + s[1];
+          this.stats[s[0]] = (this.stats[s[0]] || 0) + s[1];
+          // console.log(t.key + ", " + c[0] + ", " + s[0] + ", " + s[1])
+          e[s[0]] = (e[s[0]] || 0) + s[1]
+          st[s[0]] = (st[s[0]] || 0) + s[1]
+          t += s[1]
+        }
+        e['total'] = t
+        st['codes'][c[0]] = e;
+        tt += t
+      }
+      st['total'] = tt
+      l[ty.key] = st;
+    }
+    this.stats['levels'] = l;
+
   }
 
   redraw() {
@@ -287,7 +377,6 @@ class Timeline {
     }
     this.xScale = this.scales[this.scaleType];
     this.xScale.range([0, this.#width - 40]);
-    console.log(this.nBars)
   }
 
   adjustScale() {
@@ -418,25 +507,7 @@ class Timeline {
 //     }
 // };
 
-var container = {
-    width: document.querySelector(".timeline-view").clientWidth,
-    height: 300
-};
-
 var parseTime = d3.timeParse("%H:%M:%S");
-
-var data = [
-    {
-        name: "linear",
-        points: [300, 400, 500, 600],
-        times: [parseTime("00:30:00"), parseTime("00:40:00"), parseTime("00:50:00"), parseTime("01:00:00")]
-    },
-    {
-        name: "pow",
-        points: [1, 10, 100, 1000],
-        times: [parseTime("00:01:00"), parseTime("00:10:00"), parseTime("01:20:00"), parseTime("01:30:00")]
-    }
-];
 
 // d3.csv("./data/p1.csv", type).then(function(data) {
   // var chart = new Chart(container, data)
@@ -662,15 +733,15 @@ Promise.all(promises).then(function(files) {
         .attr('y2', function (d) {
           var displacement = 3;
           var stepsize = 7
-          if (d.code[3] === "frame") {
+          if (d.code[4] === "frame") {
             displacement = 3 * stepsize
-          } else if (d.code[3] === "relation") {
+          } else if (d.code[4] === "relation") {
             displacement = 2 * stepsize
-          } else if (d.code[3] === "element") {
+          } else if (d.code[4] === "element") {
             displacement = stepsize
           }
 
-          if (d.code[4] === "problem") {
+          if (d.code[5] === "problem") {
             return baseline + displacement
           }
           return baseline - displacement
@@ -684,18 +755,18 @@ Promise.all(promises).then(function(files) {
         .attr('rx', 0)
         .attr('ry', 0)
         .attr('fill', function(d, i) {
-          if (d.code[4] === "problem") {
+          if (d.code[5] === "problem") {
             return $yellow;
-          } else if (d.code[4] === "solution") {
+          } else if (d.code[5] === "solution") {
             return $blue
           }
           return $greyLighter;
         })
         .attr('fill-opacity', 0.6)
         .attr('stroke', function(d) {
-          if (d.code[4] === "problem") {
+          if (d.code[5] === "problem") {
             return $yellow;
-          } else if (d.code[4] === "solution") {
+          } else if (d.code[5] === "solution") {
             return $blue
           }
           return $greyLighter;
@@ -754,8 +825,6 @@ Promise.all(promises).then(function(files) {
     y.domain([-100, 100]);
     x2.domain(x.domain());
     y2.domain(y.domain());
-
-    console.log(d3.max(endTimes));
 }).catch(function(err) {
     // handle error here
 })

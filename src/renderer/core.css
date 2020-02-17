@@ -9617,6 +9617,9 @@ body {
 .timeline-view .timeline svg line {
   shape-rendering: crispEdges;
 }
+.timeline-view .material-icons {
+  font-family: "Material Icons Outlined";
+}
 .timeline-view .wrapper {
   overflow: scroll;
   display: none;
@@ -9626,34 +9629,100 @@ body {
   stroke-width: 0.3;
 }
 
-.tooltip {
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.8);
+.tippy-tooltip.stats-theme {
+  color: #26323d;
+  box-shadow: 0 0 20px 4px rgba(154, 161, 177, 0.45);
+  background-color: white;
+}
+
+.tippy-tooltip.stats-theme[data-placement^=top] .tippy-arrow {
+  border-top-color: white;
+}
+
+.tippy-tooltip.stats-theme[data-placement^=bottom] .tippy-arrow {
+  border-bottom-color: white;
+}
+
+.tippy-tooltip.stats-theme[data-placement^=left] .tippy-arrow {
+  border-left-color: white;
+}
+
+.tippy-tooltip.stats-theme[data-placement^=right] .tippy-arrow {
+  border-right-color: white;
+}
+
+.tippy-tooltip.stats-theme .tippy-content div {
+  padding: 5px;
+}
+.tippy-tooltip.stats-theme .tippy-content div li {
+  list-style: none;
+  margin-bottom: 1px;
+}
+.tippy-tooltip.stats-theme .tippy-content div li span {
+  float: right;
+}
+.tippy-tooltip.stats-theme .tippy-content div li .value {
+  margin-left: 30px;
+}
+.tippy-tooltip.stats-theme .tippy-content div li#heading {
+  font-size: 10px;
+}
+.tippy-tooltip.stats-theme .tippy-content div li.l1 {
+  font-weight: 500;
+}
+.tippy-tooltip.stats-theme .tippy-content div li.l2 {
+  padding-left: 5px;
+  font-size: 12px;
+}
+.tippy-tooltip.stats-theme .tippy-content div li.l3 {
+  padding-left: 10px;
+  font-size: 10px;
+}
+.tippy-tooltip.stats-theme .tippy-content div li .total {
+  color: #bbbbbb;
+}
+
+#tooltip {
+  background-color: #333;
   color: white;
-  max-width: 350px;
-  border-radius: 10px;
-  padding: 10px;
-  padding-top: 5px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  display: none;
 }
-.tooltip .participant {
-  position: relative;
-  min-width: 40px;
-  max-height: 40px;
-  border-radius: 20px;
-  margin-top: 5px;
-  margin-right: 10px;
+
+#tooltip[data-show] {
+  display: initial;
 }
-.tooltip .participant p {
+
+#arrow,
+#arrow::before {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.6em;
+  width: 8px;
+  height: 8px;
+  z-index: -1;
 }
-.tooltip span {
-  color: #DBD8E3;
-  text-transform: uppercase;
-  font-size: 0.7em;
+
+#arrow::before {
+  content: "";
+  transform: rotate(45deg);
+  background: #333;
+}
+
+#tooltip[data-popper-placement^=top] > #arrow {
+  bottom: -4px;
+}
+
+#tooltip[data-popper-placement^=bottom] > #arrow {
+  top: -4px;
+}
+
+#tooltip[data-popper-placement^=left] > #arrow {
+  right: -4px;
+}
+
+#tooltip[data-popper-placement^=right] > #arrow {
+  left: -4px;
 }
 
 .yellow {
