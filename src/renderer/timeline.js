@@ -34,15 +34,6 @@ var coding_scheme = [
   [16, "manipulation2", "manipulation", "abduction", "element", "solution"]
 ];
 
-// function createTooltips() {
-//   if (!SVGElement.prototype.contains) {
-//     SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
-//   }
-//
-//   console.log(document.querySelectorAll('.bar'))
-//   tippy(document.querySelectorAll('.bar'));
-// }
-
 Array.from(document.querySelectorAll(".code-indicator")).forEach(
     function(element, index, array) {
         element.addEventListener('click', function (event) {
@@ -113,12 +104,10 @@ class Timeline {
                     .html('<span class="info"><i class="material-icons">info</i></span><span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
 
       this.calculateStats(data)
-      console.log(this.stats)
 
       var constructVariableString = function(name, level, values, total) {
         return str = '<li class="l' + level + '">' + name + '<span class="value">' + ((values['problem'] || 0) + (values['solution'] || 0)) + '<i class="space">' + '(' + (values['problem'] || 0) + "/" + (values['solution'] || 0) + ')' + '</i>' + '<span class="total">' + "/"  + total + '</span></span></li>'
       }
-      console.log(this.stats['levels'])
       var str = '<div><li class="l1" id="heading">name<span class="value">number<i = "space">(problem/solution)</i><span class="total">/total</span>'
       str += constructVariableString("abduction", 1, this.stats, this.stats['total']);
       for (var l in this.stats['levels']) {
@@ -131,8 +120,6 @@ class Timeline {
       }
       str += '</div>'
 
-
-      console.log(str);
 
       tippy(this.controls.select('.info').node(), {
         theme: "stats",
@@ -194,6 +181,20 @@ class Timeline {
               // .on("mousemove", mousemove)
               // .on("mouseleave", mouseleave)
 
+      if (!SVGElement.prototype.contains) {
+        SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
+      }
+      d3.selectAll('.bar').select(function(d, i) {
+        var tip = tippy(this.previousElementSibling, {
+          content: "<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + d.code[1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>",
+          theme: "tooltip",
+          delay: [200, 200]
+        });
+      });
+      // tippy.createSingleton(tooltips, {delay: 1000});
+
+
+
       var labels = ["FR", "RE", "EL", "", "EL", "RE", "FR"];
 
       var l = this.svg.append("g");
@@ -233,8 +234,10 @@ class Timeline {
       this.xAxis = d3.axisBottom()
           .scale(this.xScale);
 
+
       this.domXAxis = this.svg.append("g")
           .attr("class", "axis axis--x")
+          .attr("transform", "translate(40, 0)")
           // .attr("transform", "translate(0," + this.#height + ")")
           .call(this.xAxis);
 
@@ -247,7 +250,6 @@ class Timeline {
   }
 
   calculateStats(d) {
-    console.log(d);
     var values = d3array.rollups(d, v => v.length, d => d.code[4], d => d.code[2], d => d.code[5])
     values = Array.from(values, ([key, value]) => ({key, value}));
     var pc = 0, sc = 0, count = 0;
@@ -347,7 +349,7 @@ var parseTime = d3.timeParse("%H:%M:%S");
 
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
-for (var i = 1; i < fileNames.length; i++) {
+for (var i = 1; i < 2; i++) {
   var timeline = new Timeline({
     filename: fileNames[i],
     container: ".timeline-view"

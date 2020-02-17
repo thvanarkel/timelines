@@ -9629,7 +9629,7 @@ body {
   stroke-width: 0.3;
 }
 
-.tippy-tooltip.stats-theme {
+.tippy-tooltip.stats-theme, .tippy-tooltip.tooltip-theme {
   color: #26323d;
   box-shadow: 0 0 20px 4px rgba(154, 161, 177, 0.45);
   background-color: white;
@@ -9648,6 +9648,22 @@ body {
 }
 
 .tippy-tooltip.stats-theme[data-placement^=right] .tippy-arrow {
+  border-right-color: white;
+}
+
+.tippy-tooltip.tooltip-theme[data-placement^=top] .tippy-arrow {
+  border-top-color: white;
+}
+
+.tippy-tooltip.tooltip-theme[data-placement^=bottom] .tippy-arrow {
+  border-bottom-color: white;
+}
+
+.tippy-tooltip.tooltip-theme[data-placement^=left] .tippy-arrow {
+  border-left-color: white;
+}
+
+.tippy-tooltip.tooltip-theme[data-placement^=right] .tippy-arrow {
   border-right-color: white;
 }
 
@@ -9684,6 +9700,35 @@ body {
 }
 .tippy-tooltip.stats-theme .tippy-content div li .total {
   color: #bbbbbb;
+}
+
+.tippy-tooltip.tooltip-theme {
+  padding: 10px;
+  padding-top: 5px;
+  padding-left: 50px;
+}
+.tippy-tooltip.tooltip-theme .participant {
+  position: relative;
+  margin-left: -50px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  margin-top: 5px;
+  margin-right: 10px;
+  color: white;
+  float: left;
+}
+.tippy-tooltip.tooltip-theme .participant p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6em;
+}
+.tippy-tooltip.tooltip-theme span {
+  color: #DBD8E3;
+  text-transform: uppercase;
+  font-size: 0.7em;
 }
 
 #tooltip {
