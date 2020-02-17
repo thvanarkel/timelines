@@ -130,16 +130,9 @@ class Timeline {
       var constructVariableString = function(name, level, values, total) {
         return str = '<li class="l' + level + '">' + name + '<span class="value">' + ((values['problem'] || 0) + (values['solution'] || 0)) + '<i class="space">' + '(' + (values['problem'] || 0) + "/" + (values['solution'] || 0) + ')' + '</i>' + '<span class="total">' + "/"  + total + '</span></span></li>'
       }
-      // console.log(this.stats['levels']['frame']['codes']['regression'])
-
       console.log(this.stats['levels'])
       var str = '<div><li class="l1" id="heading">name<span class="value">number<i = "space">(problem/solution)</i><span class="total">/total</span>'
       str += constructVariableString("abduction", 1, this.stats, this.stats['total']);
-      // str += constructVariableString("Frame", 2, this.stats['frame']['codes']['regression'], "");
-      // str += constructVariableString("Regression", 3, this.stats['frame']['codes']['regression'], "");
-      // str += constructVariableString("Transformation", 3, this.stats['frame']['codes']['regression'], "");
-      // str += constructVariableString("Proposition", 3, this.stats['frame']['codes']['regression'], "");
-      // str += constructVariableString("Relation", 2, this.stats['frame']['codes']['regression'], "");
       for (var l in this.stats['levels']) {
         if (l !== "none") {
           str += constructVariableString(l, 2, this.stats['levels'][l], this.stats['total'] - this.stats['none']);
@@ -158,12 +151,6 @@ class Timeline {
         delay: [200, 200],
         content: str
       });
-
-       // + this.stats['total'] + '</span>
-      // <span class="l2">Abduction</span><span></span>
-      // <span class="l3">Abduction</span><span></span>
-
-
       this.endTime = d3.max(data, function(d) {
         return d.timeEnd;
       })
@@ -220,8 +207,6 @@ class Timeline {
               // .on("mousemove", mousemove)
               // .on("mouseleave", mouseleave)
 
-
-
       var labels = ["FR", "RE", "EL", "", "EL", "RE", "FR"];
 
       var l = this.svg.append("g");
@@ -255,35 +240,6 @@ class Timeline {
         .attr("stroke", "black")
         .attr("stroke-width", 1)
 
-
-
-        // l.append("line")
-        //   .attr("class", "axis")
-        //   .attr("x1", 20)
-        //   .attr("x2", width)
-        //   .attr("y1", 30)
-        //   .attr("y2", 30)
-        //   .attr("stroke", "black")
-        //   .attr("stroke-width", 0.1)
-
-        // timeline.append("text")
-        //   .text("FR")
-        //   .attr('x', 20)
-        //   .attr('y', 25)
-        //   .attr("font-size", "7px")
-        //
-        // timeline.append("text")
-        //   .text("RE")
-        //   .attr('x', 20)
-        //   .attr('y', 39)
-        //   .attr("font-size", "7px")
-        //
-        // timeline.append("text")
-        //   .text("EL")
-        //   .attr('x', 20)
-        //   .attr('y', 39)
-        //   .attr("font-size", "7px")
-
       this.setXScale();
       this.xScale.range([0, this.#width - 40]);
 
@@ -298,8 +254,6 @@ class Timeline {
       this.adjustScale()
       this.redraw()
 
-
-      // this.controls.selectAll("input").on("click", this.changeXScale.bind(this));
       this.controls.selectAll(".export").on("click", this.export.bind(this));
       this.controls.selectAll(".timescale").on("click", this.changeXScale.bind(this))
     }).bind(this));
@@ -307,13 +261,7 @@ class Timeline {
 
   calculateStats(d) {
     console.log(d);
-    // var abductions = d.filter(function(d) {
     var values = d3array.rollups(d, v => v.length, d => d.code[4], d => d.code[2], d => d.code[5])
-    // var data = [ {name: "jim",   amount: "34.0",   date: "11/12/2015"}, {name: "carl",  amount: "120.11", date: "11/12/2015"}, {name: "stacy", amount: "12.01",  date: "01/04/2016"}, {name: "stacy", amount: "34.05",  date: "01/04/2016"}]
-    // var count = d3array.group(data, d => d.name)
-      // .group(function(d) { return d.code[5]; })
-      // .rollup(function(v) { return v.length; })
-      // .entries(d);
     values = Array.from(values, ([key, value]) => ({key, value}));
     var pc = 0, sc = 0, count = 0;
 
@@ -328,7 +276,6 @@ class Timeline {
         for (var s of c[1]) { // iterate over space
           this.stats['total'] = (this.stats['total'] || 0) + s[1];
           this.stats[s[0]] = (this.stats[s[0]] || 0) + s[1];
-          // console.log(t.key + ", " + c[0] + ", " + s[0] + ", " + s[1])
           e[s[0]] = (e[s[0]] || 0) + s[1]
           st[s[0]] = (st[s[0]] || 0) + s[1]
           t += s[1]
@@ -409,103 +356,6 @@ class Timeline {
     });
   }
 }
-
-// class Chart {
-//     margin = { top: 40, right: 25, bottom: 20, left: 25 }
-//
-//     animationDuration = 400
-//
-//     scales = {
-//         power2: d3.scalePow().exponent(2),
-//         linear: d3.scaleLinear(),
-//         sqrt:   d3.scalePow().exponent(0.5),
-//         log2:   d3.scaleLog().base(2),
-//         log10:  d3.scaleLog().base(10),
-//         time:   d3.scaleTime()
-//     }
-//
-//     constructor(container, data) {
-//         this.el = d3.select(".js-chart")
-//             .attr("width", container.width)
-//             .attr("height", container.height);
-//
-//         this.width  = container.width - this.margin.left - this.margin.right;
-//         this.height = container.height - this.margin.top - this.margin.bottom;
-//
-//         this.adaptScales();
-//         this.setXScale();
-//         this.draw(data);
-//
-//         d3.selectAll(".js-chart-container input").on("click", this.changeXScale.bind(this));
-//     }
-//
-//     draw(data) {
-//         var mainGroup, series;
-//
-//         mainGroup = this.el.append("g")
-//             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-//
-//         series = mainGroup.selectAll(".series").data(data)
-//             .enter().append("g")
-//                 .attr("class", function (d) { return "series " + d.name; });
-//
-//         this.points = series.selectAll(".point").data((function (d) {
-//           console.log(this.scaleType)
-//           return d.points;
-//         }).bind(this))
-//             .enter().append("line")
-//                 .attr("class", "point")
-//                 .attr("x1", this.xScale)
-//                 .attr("x2", this.xScale)
-//                 .attr("y1", this.height / 2 - 10)
-//                 .attr("y2", this.height / 2 + 10)
-//                 .attr("stroke-width", "1px")
-//                 .attr("stroke", "red")
-//                 // .attr("r", 6);
-//
-//         this.points.append("title")
-//            .text(String);
-//
-//         this.xAxis = d3.axisBottom()
-//             .scale(this.xScale);
-//
-//         this.domXAxis = mainGroup.append("g")
-//             .attr("class", "axis axis--x")
-//             // .attr("transform", "translate(0," + this.height + ")")
-//             .call(this.xAxis);
-//     }
-//
-//     redraw() {
-//         this.domXAxis.transition()
-//             .duration(this.animationDuration)
-//             .call(this.xAxis.scale(this.xScale));
-//         this.points.transition()
-//             .duration(this.animationDuration)
-//             .attr("x1", this.xScale)
-//             .attr("x2", this.xScale);
-//     }
-//
-//     adaptScales() {
-//         Object.keys(this.scales).forEach(function (scaleType) {
-//             this.scales[scaleType]
-//                 .domain([1, 1000])
-//                 .range([0, this.width]);
-//         }, this);
-//     }
-//
-//     changeXScale() {
-//
-//         this.setXScale();
-//         console.log(this.scaleType)
-//         this.redraw();
-//     }
-//
-//     setXScale() {
-//         this.scaleType = this.controls.select("input:checked").node().value;
-//
-//         this.xScale = this.scales[this.scaleType];
-//     }
-// };
 
 var parseTime = d3.timeParse("%H:%M:%S");
 
