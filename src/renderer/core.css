@@ -9597,8 +9597,10 @@ body {
   flex: 3;
 }
 .timeline-view .timeline {
-  width: 100%;
-  border: 1px solid black;
+  width: calc(100% - 20px);
+  border: 1px solid #E2E2E9;
+  border-radius: 5px;
+  margin: 10px;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;

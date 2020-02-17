@@ -228,7 +228,7 @@ class Timeline {
 
       l.append("text")
         .text(this.filename)
-        .attr('x', 0)
+        .attr('x', 1)
         .attr('y', 17)
         .attr("font-size", "13px")
         .attr("font-weight", "bold")
@@ -426,7 +426,7 @@ var parseTime = d3.timeParse("%H:%M:%S");
 
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
-for (var i = 1; i < 2; i++) {
+for (var i = 1; i < fileNames.length; i++) {
   var timeline = new Timeline({
     filename: fileNames[i],
     container: ".timeline-view"
