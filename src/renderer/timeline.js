@@ -34,34 +34,34 @@ var coding_scheme = [
   [16, "manipulation2", "manipulation", "abduction", "element", "solution"]
 ];
 
-Array.from(document.querySelectorAll(".code-indicator")).forEach(
-    function(element, index, array) {
-        element.addEventListener('click', function (event) {
-          var el = event.srcElement
-          var c = el.classList
-          c.toggle('deselected');
-          var o = c.contains('deselected') ? "none" : "inline"
-          var l = el.parentElement.getAttribute("filter-level")
-          if (l === "inference-type") {
-            d3.selectAll('.bubble')
-              .each(function(d) {
-                if (d.code[3] === el.parentElement.getAttribute("code")) {
-                  d3.select(this)
-                  .attr("display", o)
-                }
-              })
-          } else if (l === "inference-subtype") {
-            d3.selectAll('.bubble')
-              .each(function(d) {
-                if ((d.code[1]).includes(el.parentElement.getAttribute("code"))) {
-                  d3.select(this)
-                  .attr("display", o)
-                }
-              })
-          }
-        });
-    }
-);
+// Array.from(document.querySelectorAll(".code-indicator")).forEach(
+//     function(element, index, array) {
+//         element.addEventListener('click', function (event) {
+//           var el = event.srcElement
+//           var c = el.classList
+//           c.toggle('deselected');
+//           var o = c.contains('deselected') ? "none" : "inline"
+//           var l = el.parentElement.getAttribute("filter-level")
+//           if (l === "inference-type") {
+//             d3.selectAll('.bubble')
+//               .each(function(d) {
+//                 if (d.code[3] === el.parentElement.getAttribute("code")) {
+//                   d3.select(this)
+//                   .attr("display", o)
+//                 }
+//               })
+//           } else if (l === "inference-subtype") {
+//             d3.selectAll('.bubble')
+//               .each(function(d) {
+//                 if ((d.code[1]).includes(el.parentElement.getAttribute("code"))) {
+//                   d3.select(this)
+//                   .attr("display", o)
+//                 }
+//               })
+//           }
+//         });
+//     }
+// );
 
 class Timeline {
   margin = { top: 0, right: 5, bottom: 0, left: 5 }
@@ -136,19 +136,19 @@ class Timeline {
       var checkboxString = function(type, filterlevel, level) {
         return '<li class="l' + level + '">' + type + '<input class="checkbox" type="checkbox" filter-level="' + filterlevel + '" code="' + type + '" checked="checked"></li>'
       }
-      str = '<div class="filters">' + checkboxString('abduction', "inference_type", 1)
+      str = '<div class="filters">' + checkboxString('abduction', "inference-type", 1)
       for (var l in this.stats['levels']) {
-        str += checkboxString(l, "inference_sub_type", 2)
+        str += checkboxString(l, "inference-subtype", 2)
         for (var t in this.stats['levels'][l]['codes']) {
           if (t === "none") break;
-          str+= checkboxString(t, "code_type", 3)
+          str+= checkboxString(t, "code-type", 3)
         }
       }
 
       var self = this
       this.filters = tippy(this.controls.select('.filter').node(), {
         theme: "stats",
-        delay: [200, 60000],
+        delay: [200, 200],
         content: str,
         interactive: true,
         onCreate: function() {
@@ -164,7 +164,7 @@ class Timeline {
         }).bind(this)
       });
 
-      console.log(this.controls.selectAll("input[type=checkbox]"))
+      // console.log(this.controls.selectAll("input[type=checkbox]"))
       // d3.selectAll("input[type=checkbox]").on("change", this.filter);
 
       this.endTime = d3.max(data, function(d) {
@@ -355,7 +355,7 @@ class Timeline {
 
   update() {
 
-    var newX = d3.event.transform.rescaleX(x);
+    // var newX = d3.event.transform.rescaleX(x);
 
     this.xScale = d3.event.transform.rescaleX(this.x2)
 
@@ -372,16 +372,19 @@ class Timeline {
   }
 
   filter(level, type, sender) {
-
-    if (d3.select(sender).attr("checked") === "checked") {
-      d3.select(sender).attr("checked", "false")
-    } else if (d3.select(sender).attr("checked") === "false") {
-      d3.select(sender).attr("checked", "checked")
-    }
-
+    // console.log(d3.select(sender).attr("checked"))
+    // console.log(sender.node().nodeName === "input");
+    // console.log(sender.nodeName)
+      if (sender.nodeName === "INPUT") {
+        if (d3.select(sender).attr("checked") === "checked") {
+          d3.select(sender).attr("checked", "false")
+        } else if (d3.select(sender).attr("checked") === "false") {
+          d3.select(sender).attr("checked", "checked")
+        }
+      }
     var o = d3.select(sender).attr("checked") === "false" ? "none" : "inline"
-    console.log(o)
-    if (level === "inference_type") {
+    // console.log(o)
+    if (level === "inference-type") {
       this.bars
         .each(function(d) {
           if (d.code[3] === type) {
@@ -389,7 +392,7 @@ class Timeline {
             .attr("display", o)
           }
         })
-    } else if (level === "inference_sub_type") {
+    } else if (level === "inference-subtype") {
       this.bars
         .each(function(d) {
           if ((d.code[4]).includes(type)) {
@@ -397,21 +400,20 @@ class Timeline {
             .attr("display", o)
           }
         })
-    } else if (level === "code_type") {
+    } else if (level === "code-type") {
       this.bars
         .each(function(d) {
-          if ((d.code[2].includes(type))) {
+          if ((d.code[1].includes(type))) {
             d3.select(this)
             .attr("display", o)
           }
-
         })
     }
 
-    // console.log(this)
-    console.log(level)
-    console.log(type)
-    // console.log(checked)
+    // // console.log(this)
+    // console.log(level)
+    // console.log(type)
+    // // console.log(checked)
     // console.log(sender)
   }
 
@@ -468,347 +470,396 @@ class Timeline {
   }
 }
 
+var formatTime = d3.timeFormat("%H:%M:%S");
 var parseTime = d3.timeParse("%H:%M:%S");
 
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
-for (var i = 1; i < 2; i++) {
+var timelines = []
+
+for (var i = 0; i < fileNames.length; i++) {
   var timeline = new Timeline({
     filename: fileNames[i],
     container: ".timeline-view"
   })
   timeline.init()
+  timelines.push(timeline)
 }
 
-// D3 visualisation
-var svg = d3.select("svg"),
-  margin = {
-    top: 20,
-    right: 20,
-    bottom: 110,
-    left: 40
-  },
-  margin2 = {
-    top: svg.node().getBoundingClientRect().height - ((fileNames.length * 15) + 40),
-    right: 20,
-    bottom: 30,
-    left: 40
-  },
-  width = 80,//svg.node().getBoundingClientRect().width - margin.left - margin.right,
-  height = 1500,//svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
-  height2 = (fileNames.length * 15) //svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
 
-var bubbleHeight = 20;
-
-var parseTime = d3.timeParse("%H:%M:%S");
-var formatTime = d3.timeFormat("%H:%M:%S");
-
-var x = d3.scaleTime().range([0, width]),
-  x2 = d3.scaleTime().range([0, width]),
-  y = d3.scaleLinear().range([height, 0]),
-  y2 = d3.scaleLinear().range([height2, 0]);
-
-var xAxis = d3.axisBottom(x).tickFormat(formatTime),
-  xAxis2 = d3.axisBottom(x2).tickFormat(formatTime),
-  yAxis = d3.axisLeft(y);
-
-var brush = d3.brushX()
-  .extent([
-    [0, 0],
-    [width, height2]
-  ])
-  .on("brush end", brushed);
-
-var zoom = d3.zoom()
-  .scaleExtent([1, Infinity])
-  .translateExtent([
-    [0, 0],
-    [width, height]
-  ])
-  .extent([
-    [0, 0],
-    [width, height]
-  ])
-  .on("zoom", zoomed);
-
-svg.append("defs").append("clipPath")
-  .attr("id", "clip")
-  .append("rect")
-  .attr("width", width)
-  .attr("height", height)
-
-svg.append("rect")
-  .attr("class", "zoom")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-  .call(zoom);
-
-var focus = svg.append("g")
-  .attr("class", "focus")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-// var context = svg.append("g")
-//   .attr("class", "context")
-//   .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-var bubbleWidth = function(d) {
-  var tStart = d.timeStart;
-  var tEnd = new Date(tStart.getTime() + 5000);
-  return 2;
-}
-
-var promises = [];
-
-for (var i = 0; i < fileNames.length; i++) {
-  promises.push(d3.csv("./data/" + fileNames[i] + ".csv", type));
-}
-
-Promise.all(promises).then(function(files) {
-    // files[0] will contain file1.csv
-    // files[1] will contain file2.csv
-
-    // Store maximum values
-    var endTimes = [];
-
-    var tooltip = d3.select(".wrapper")
-      .append("div")
-      .style("opacity", 0)
-      .attr("class", "tooltip")
-      .style("position", "absolute")
-      .style("border", "solid")
-      .style("border-width", "2px")
-      .style("z-index", "100")
-
-    var mouseover = function(d) {
-      console.log("mouseover");
-      tooltip
-        .style("opacity", 1)
-        .style("z-index", 100)
-      d3.select(this)
-        .style("opacity", 1)
-    }
-    var mousemove = function(d) {
-      console.log("mousemove");
-      console.log(d3.event.pageX, d3.event.pageY)
-      tooltip
-        .html("<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + d.code[1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
-        .style("left", function() {
-          var x = d3.event.pageX;
-          var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-          if (x > (w - tooltip.node().getBoundingClientRect().width)) {
-            return (x - tooltip.node().getBoundingClientRect().width - 10) + "px"
-          }
-          return (x + 10) + "px";
-        })
-        .style("top", function() {
-          var y = d3.event.pageY;
-          var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-          if (y > (h - tooltip.node().getBoundingClientRect().height)) {
-            return (y - tooltip.node().getBoundingClientRect().height - 10) + "px"
-          }
-          return (y + 10) + "px";
-        })
-    }
-    var mouseleave = function(d) {
-      console.log("mouseleave")
-      tooltip
-        .style("opacity", 0)
-        .style("z-index", -1)
-      d3.select(this)
-    }
-
-    for(let i = 0; i < files.length; i++) {
-      var data = files[i];
-      var minTime = parseTime("0:0:0")
-      var maxTime = d3.max(data, function(d) {
-        return d.timeEnd;
-      })
-      endTimes.push(maxTime)
-      x.domain([parseTime("0:0:0"), d3.max(endTimes)])
-      y.domain([-100, 100]);
-      x2.domain(x.domain());
-      y2.domain(y.domain());
-
-      for(var j = 0; j < data.length; j++) { data[j].next = data[j+1]; }
-
-      var timeline = focus.append("g")
-        .attr("class", "timeline")
-        .attr("session", fileNames[i])
-        .attr("transform", "translate(0, " + i * 80 + ")")
-
-      timeline.append("line")
-        .attr("class", "axis")
-        .attr("x1", 20)
-        .attr("x2", width)
-        .attr("y1", 30)
-        .attr("y2", 30)
-        .attr("stroke", "black")
-        .attr("stroke-width", 0.1)
-
-      timeline.append("text")
-        .text( function(d) {
-          return fileNames[i];
-        })
-        .attr('x', 0)
-        .attr('y', 33)
-        .attr("font-size", "10px")
-
-        timeline.append("text")
-          .text("p")
-          .attr('x', 20)
-          .attr('y', 25)
-          .attr("font-size", "7px")
-
-        timeline.append("text")
-          .text("s")
-          .attr('x', 20)
-          .attr('y', 39)
-          .attr("font-size", "7px")
-
-      let baseline = 30
-
-      timeline.selectAll("line")
-        .data(data)
-        .enter()
-    		.append("line")
-    		.attr("class", "bubble")
-    		.attr('x1', function(d, i) {
-          return x(d.timeStart);
-        })
-        .attr('x2', function(d, i) {
-          return x(d.timeStart);
-        })
-        .attr('y2', function (d) {
-          var displacement = 3;
-          var stepsize = 7
-          if (d.code[4] === "frame") {
-            displacement = 3 * stepsize
-          } else if (d.code[4] === "relation") {
-            displacement = 2 * stepsize
-          } else if (d.code[4] === "element") {
-            displacement = stepsize
-          }
-
-          if (d.code[5] === "problem") {
-            return baseline + displacement
-          }
-          return baseline - displacement
-        })
-        .attr('y1', function(d) {
-          if (d.code[1] === "none") {
-            return baseline + 3;
-          }
-          return baseline;
-        })
-        .attr('rx', 0)
-        .attr('ry', 0)
-        .attr('fill', function(d, i) {
-          if (d.code[5] === "problem") {
-            return $yellow;
-          } else if (d.code[5] === "solution") {
-            return $blue
-          }
-          return $greyLighter;
-        })
-        .attr('fill-opacity', 0.6)
-        .attr('stroke', function(d) {
-          if (d.code[5] === "problem") {
-            return $yellow;
-          } else if (d.code[5] === "solution") {
-            return $blue
-          }
-          return $greyLighter;
-        })
-        .attr("stroke-width", "1px")
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave)
-
-        // var cTimeline = context.append("g")
-        //   .attr("class", "cTimeline")
-        //   .attr("transform", "translate(0, " + i * 15 + ")")
-        //
-        // cTimeline.selectAll("line")
-        //   .data(data)
-        //   .enter()
-        //   .append("line")
-        //   .attr("class", "line")
-        //   .attr("x1", function(d) {
-        //     return x(d.timeStart);
-        //   })
-        //   .attr("x2", function(d) {
-        //     return x(d.timeStart);
-        //   })
-        //   .attr("y1", 0)
-        //   .attr("y2", 10)
-        //   .attr("stroke", function(d) {
-        //     if (d.code[4] === "problem") {
-        //       return $yellow;
-        //     } else if (d.code[4] === "solution") {
-        //       return $blue
-        //     }
-        //     return $greyLighter;
-        //   })
-        //   .attr("stroke-width", "1px")
-
-    }
-    focus.append("g")
-        .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-    // context.append("g")
-    //   .attr("class", "axis axis--x")
-    //   .attr("transform", "translate(0," + height2 + ")")
-    //   .call(xAxis2);
-    //
-    // context.append("g")
-    //   .attr("class", "brush")
-    //   .call(brush)
-    //   .call(brush.move, x.range()); // Set initial brush size
-    //
-    // context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
-
-    x.domain([parseTime("0:0:0"), d3.max(endTimes)])
-    y.domain([-100, 100]);
-    x2.domain(x.domain());
-    y2.domain(y.domain());
-}).catch(function(err) {
-    // handle error here
+d3.selectAll('.code-indicator').on('click', function() {
+  var parent = d3.select(this.parentNode);
+  if (parent.attr("checked") === "checked") {
+    parent.attr("checked", "false")
+  } else if (parent.attr("checked") === "false") {
+    parent.attr("checked", "checked")
+  }
+  d3.select(this).classed("deselected", !d3.select(this).classed("deselected"))
+  for (var timeline of timelines) {
+    timeline.filter(parent.attr("filter-level"), parent.attr('code'), parent.node());
+  }
 })
 
-function brushed() {
-  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-  var s = d3.event.selection || x2.range();
-  x.domain(s.map(x2.invert, x2));
-    focus.selectAll(".bubble")
-    .attr("x1", function(d, i) {
-      return x(d.timeStart);
-    })
-    .attr("x2", function(d, i) {
-      return x(d.timeStart);
-    })
-  focus.select(".axis--x").call(xAxis);
-  svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
-    .scale(width / (s[1] - s[0]))
-    .translate(-s[0], 0));
-}
+// Array.from(document.querySelectorAll(".code-indicator")).forEach(
+//     function(element, index, array) {
+//
+//         element.addEventListener('click', function (event) {
+//           var el = event.srcElement
+//           var c = el.classList
+//           c.toggle('deselected');
+//           var o = c.contains('deselected') ? "none" : "inline"
+//           var l = el.parentElement.getAttribute("filter-level")
+//           if (l === "inference-type") {
+//             d3.selectAll('.bubble')
+//               .each(function(d) {
+//                 if (d.code[3] === el.parentElement.getAttribute("code")) {
+//                   d3.select(this)
+//                   .attr("display", o)
+//                 }
+//               })
+//           } else if (l === "inference-subtype") {
+//             d3.selectAll('.bubble')
+//               .each(function(d) {
+//                 if ((d.code[1]).includes(el.parentElement.getAttribute("code"))) {
+//                   d3.select(this)
+//                   .attr("display", o)
+//                 }
+//               })
+//           }
+//         });
+//     }
+// );
 
-function zoomed() {
-  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-  var t = d3.event.transform;
-  x.domain(t.rescaleX(x2).domain());
-  focus.selectAll(".bubble")
-    .attr("x1", function(d, i) {
-      return x(d.timeStart);
-    })
-    .attr("x2", function(d, i) {
-      return x(d.timeStart);
-    })
-  focus.select(".axis--x").call(xAxis);
-  // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
-}
+//
+// // D3 visualisation
+// var svg = d3.select("svg"),
+//   margin = {
+//     top: 20,
+//     right: 20,
+//     bottom: 110,
+//     left: 40
+//   },
+//   margin2 = {
+//     top: svg.node().getBoundingClientRect().height - ((fileNames.length * 15) + 40),
+//     right: 20,
+//     bottom: 30,
+//     left: 40
+//   },
+//   width = 80,//svg.node().getBoundingClientRect().width - margin.left - margin.right,
+//   height = 1500,//svg.node().getBoundingClientRect().height - margin.top - margin.bottom,
+//   height2 = (fileNames.length * 15) //svg.node().getBoundingClientRect().height - margin2.top - margin2.bottom;
+//
+// var bubbleHeight = 20;
+//
+// var parseTime = d3.timeParse("%H:%M:%S");
+// var formatTime = d3.timeFormat("%H:%M:%S");
+//
+// var x = d3.scaleTime().range([0, width]),
+//   x2 = d3.scaleTime().range([0, width]),
+//   y = d3.scaleLinear().range([height, 0]),
+//   y2 = d3.scaleLinear().range([height2, 0]);
+//
+// var xAxis = d3.axisBottom(x).tickFormat(formatTime),
+//   xAxis2 = d3.axisBottom(x2).tickFormat(formatTime),
+//   yAxis = d3.axisLeft(y);
+//
+// var brush = d3.brushX()
+//   .extent([
+//     [0, 0],
+//     [width, height2]
+//   ])
+//   .on("brush end", brushed);
+//
+// var zoom = d3.zoom()
+//   .scaleExtent([1, Infinity])
+//   .translateExtent([
+//     [0, 0],
+//     [width, height]
+//   ])
+//   .extent([
+//     [0, 0],
+//     [width, height]
+//   ])
+//   .on("zoom", zoomed);
+//
+// svg.append("defs").append("clipPath")
+//   .attr("id", "clip")
+//   .append("rect")
+//   .attr("width", width)
+//   .attr("height", height)
+//
+// svg.append("rect")
+//   .attr("class", "zoom")
+//   .attr("width", width)
+//   .attr("height", height)
+//   .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+//   .call(zoom);
+//
+// var focus = svg.append("g")
+//   .attr("class", "focus")
+//   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//
+// // var context = svg.append("g")
+// //   .attr("class", "context")
+// //   .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+//
+// var bubbleWidth = function(d) {
+//   var tStart = d.timeStart;
+//   var tEnd = new Date(tStart.getTime() + 5000);
+//   return 2;
+// }
+//
+// var promises = [];
+//
+// for (var i = 0; i < fileNames.length; i++) {
+//   promises.push(d3.csv("./data/" + fileNames[i] + ".csv", type));
+// }
+//
+// Promise.all(promises).then(function(files) {
+//     // files[0] will contain file1.csv
+//     // files[1] will contain file2.csv
+//
+//     // Store maximum values
+//     var endTimes = [];
+//
+//     var tooltip = d3.select(".wrapper")
+//       .append("div")
+//       .style("opacity", 0)
+//       .attr("class", "tooltip")
+//       .style("position", "absolute")
+//       .style("border", "solid")
+//       .style("border-width", "2px")
+//       .style("z-index", "100")
+//
+//     var mouseover = function(d) {
+//       console.log("mouseover");
+//       tooltip
+//         .style("opacity", 1)
+//         .style("z-index", 100)
+//       d3.select(this)
+//         .style("opacity", 1)
+//     }
+//     var mousemove = function(d) {
+//       console.log("mousemove");
+//       console.log(d3.event.pageX, d3.event.pageY)
+//       tooltip
+//         .html("<div class='participant' style='background-color:" + d.nameColor + "'><p>" + d.name + "</p></div><p><span>Code</span><br>" + d.code[1] + "<br><span>Time<br></span>" + d.timeStart.toString().split(" ")[4] + " - " + d.timeEnd.toString().split(" ")[4] + "<br><span>episode</span><br>" + d.utterance + "</p>")
+//         .style("left", function() {
+//           var x = d3.event.pageX;
+//           var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+//           if (x > (w - tooltip.node().getBoundingClientRect().width)) {
+//             return (x - tooltip.node().getBoundingClientRect().width - 10) + "px"
+//           }
+//           return (x + 10) + "px";
+//         })
+//         .style("top", function() {
+//           var y = d3.event.pageY;
+//           var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+//           if (y > (h - tooltip.node().getBoundingClientRect().height)) {
+//             return (y - tooltip.node().getBoundingClientRect().height - 10) + "px"
+//           }
+//           return (y + 10) + "px";
+//         })
+//     }
+//     var mouseleave = function(d) {
+//       console.log("mouseleave")
+//       tooltip
+//         .style("opacity", 0)
+//         .style("z-index", -1)
+//       d3.select(this)
+//     }
+//
+//     for(let i = 0; i < files.length; i++) {
+//       var data = files[i];
+//       var minTime = parseTime("0:0:0")
+//       var maxTime = d3.max(data, function(d) {
+//         return d.timeEnd;
+//       })
+//       endTimes.push(maxTime)
+//       x.domain([parseTime("0:0:0"), d3.max(endTimes)])
+//       y.domain([-100, 100]);
+//       x2.domain(x.domain());
+//       y2.domain(y.domain());
+//
+//       for(var j = 0; j < data.length; j++) { data[j].next = data[j+1]; }
+//
+//       var timeline = focus.append("g")
+//         .attr("class", "timeline")
+//         .attr("session", fileNames[i])
+//         .attr("transform", "translate(0, " + i * 80 + ")")
+//
+//       timeline.append("line")
+//         .attr("class", "axis")
+//         .attr("x1", 20)
+//         .attr("x2", width)
+//         .attr("y1", 30)
+//         .attr("y2", 30)
+//         .attr("stroke", "black")
+//         .attr("stroke-width", 0.1)
+//
+//       timeline.append("text")
+//         .text( function(d) {
+//           return fileNames[i];
+//         })
+//         .attr('x', 0)
+//         .attr('y', 33)
+//         .attr("font-size", "10px")
+//
+//         timeline.append("text")
+//           .text("p")
+//           .attr('x', 20)
+//           .attr('y', 25)
+//           .attr("font-size", "7px")
+//
+//         timeline.append("text")
+//           .text("s")
+//           .attr('x', 20)
+//           .attr('y', 39)
+//           .attr("font-size", "7px")
+//
+//       let baseline = 30
+//
+//       timeline.selectAll("line")
+//         .data(data)
+//         .enter()
+//     		.append("line")
+//     		.attr("class", "bubble")
+//     		.attr('x1', function(d, i) {
+//           return x(d.timeStart);
+//         })
+//         .attr('x2', function(d, i) {
+//           return x(d.timeStart);
+//         })
+//         .attr('y2', function (d) {
+//           var displacement = 3;
+//           var stepsize = 7
+//           if (d.code[4] === "frame") {
+//             displacement = 3 * stepsize
+//           } else if (d.code[4] === "relation") {
+//             displacement = 2 * stepsize
+//           } else if (d.code[4] === "element") {
+//             displacement = stepsize
+//           }
+//
+//           if (d.code[5] === "problem") {
+//             return baseline + displacement
+//           }
+//           return baseline - displacement
+//         })
+//         .attr('y1', function(d) {
+//           if (d.code[1] === "none") {
+//             return baseline + 3;
+//           }
+//           return baseline;
+//         })
+//         .attr('rx', 0)
+//         .attr('ry', 0)
+//         .attr('fill', function(d, i) {
+//           if (d.code[5] === "problem") {
+//             return $yellow;
+//           } else if (d.code[5] === "solution") {
+//             return $blue
+//           }
+//           return $greyLighter;
+//         })
+//         .attr('fill-opacity', 0.6)
+//         .attr('stroke', function(d) {
+//           if (d.code[5] === "problem") {
+//             return $yellow;
+//           } else if (d.code[5] === "solution") {
+//             return $blue
+//           }
+//           return $greyLighter;
+//         })
+//         .attr("stroke-width", "1px")
+//         .on("mouseover", mouseover)
+//         .on("mousemove", mousemove)
+//         .on("mouseleave", mouseleave)
+//
+//         // var cTimeline = context.append("g")
+//         //   .attr("class", "cTimeline")
+//         //   .attr("transform", "translate(0, " + i * 15 + ")")
+//         //
+//         // cTimeline.selectAll("line")
+//         //   .data(data)
+//         //   .enter()
+//         //   .append("line")
+//         //   .attr("class", "line")
+//         //   .attr("x1", function(d) {
+//         //     return x(d.timeStart);
+//         //   })
+//         //   .attr("x2", function(d) {
+//         //     return x(d.timeStart);
+//         //   })
+//         //   .attr("y1", 0)
+//         //   .attr("y2", 10)
+//         //   .attr("stroke", function(d) {
+//         //     if (d.code[4] === "problem") {
+//         //       return $yellow;
+//         //     } else if (d.code[4] === "solution") {
+//         //       return $blue
+//         //     }
+//         //     return $greyLighter;
+//         //   })
+//         //   .attr("stroke-width", "1px")
+//
+//     }
+//     focus.append("g")
+//         .attr("class", "axis axis--x")
+//         .attr("transform", "translate(0," + height + ")")
+//         .call(xAxis);
+//
+//     // context.append("g")
+//     //   .attr("class", "axis axis--x")
+//     //   .attr("transform", "translate(0," + height2 + ")")
+//     //   .call(xAxis2);
+//     //
+//     // context.append("g")
+//     //   .attr("class", "brush")
+//     //   .call(brush)
+//     //   .call(brush.move, x.range()); // Set initial brush size
+//     //
+//     // context.attr("transform", "translate(" + margin.left + "," + margin2.top + ")");
+//
+//     x.domain([parseTime("0:0:0"), d3.max(endTimes)])
+//     y.domain([-100, 100]);
+//     x2.domain(x.domain());
+//     y2.domain(y.domain());
+// }).catch(function(err) {
+//     // handle error here
+// })
+//
+// function brushed() {
+//   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+//   var s = d3.event.selection || x2.range();
+//   x.domain(s.map(x2.invert, x2));
+//     focus.selectAll(".bubble")
+//     .attr("x1", function(d, i) {
+//       return x(d.timeStart);
+//     })
+//     .attr("x2", function(d, i) {
+//       return x(d.timeStart);
+//     })
+//   focus.select(".axis--x").call(xAxis);
+//   svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+//     .scale(width / (s[1] - s[0]))
+//     .translate(-s[0], 0));
+// }
+//
+// function zoomed() {
+//   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+//   var t = d3.event.transform;
+//   x.domain(t.rescaleX(x2).domain());
+//   focus.selectAll(".bubble")
+//     .attr("x1", function(d, i) {
+//       return x(d.timeStart);
+//     })
+//     .attr("x2", function(d, i) {
+//       return x(d.timeStart);
+//     })
+//   focus.select(".axis--x").call(xAxis);
+//   // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+// }
 
 // PARSE THE DATA INTO THE RIGHT FORMAT FOR THE DATA VISUALISATIONS
 
