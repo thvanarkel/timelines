@@ -70,6 +70,7 @@ class Timeline {
   animationDuration = 200
   stats = {}
 
+
   constructor(opts) {
     this.filename = opts.filename;
     this.container = opts.container;
@@ -105,18 +106,9 @@ class Timeline {
       timeline = this.svg.append("g")
                           .attr("transform", "translate(40 0)")
 
-
-      // var clip = this.svg.append("defs").append("svg:clipPath")
-      //     .attr("id", "clip")
-      //     .append("svg:rect")
-      //     .attr("width", this.#width )
-      //     .attr("height", this.#height )
-      //     .attr("x", 0)
-      //     .attr("y", 0);
-
       this.controls = this.container.append("div")
                     .attr("class", "controls")
-                    .html('<span class="info"><i class="material-icons">info</i></span><span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>')//<input type=\"radio\" name=\"x-scale\" value=\"linear\">Linear</label>\n<label><input type=\"radio\" name=\"x-scale\" value=\"time\" checked>Time</label><button type=\'button\'>Export</button>')
+                    .html('<span class="filter"><i class="material-icons">filter_list</i></span><span class="info"><i class="material-icons">info</i></span><span class="timescale" value="linear"><i class="material-icons">timer</i></span><span class="export"><i class="material-icons">open_in_new</i></span>');
 
       this.calculateStats(data)
 
@@ -135,12 +127,46 @@ class Timeline {
       }
       str += '</div>'
 
-
       tippy(this.controls.select('.info').node(), {
         theme: "stats",
         delay: [200, 200],
         content: str
       });
+
+      var checkboxString = function(type, filterlevel, level) {
+        return '<li class="l' + level + '">' + type + '<input class="checkbox" type="checkbox" filter-level="' + filterlevel + '" code="' + type + '" checked="checked"></li>'
+      }
+      str = '<div class="filters">' + checkboxString('abduction', "inference_type", 1)
+      for (var l in this.stats['levels']) {
+        str += checkboxString(l, "inference_sub_type", 2)
+        for (var t in this.stats['levels'][l]['codes']) {
+          if (t === "none") break;
+          str+= checkboxString(t, "code_type", 3)
+        }
+      }
+
+      var self = this
+      this.filters = tippy(this.controls.select('.filter').node(), {
+        theme: "stats",
+        delay: [200, 60000],
+        content: str,
+        interactive: true,
+        onCreate: function() {
+          // console.log(this.content.selectAll("input[type=checkbox]"))
+          // d3.selectAll("input[type=checkbox]").property('checked', true);
+        },
+        onShown: ( function() {
+          // console.log(this.controls.selectAll("input[type=checkbox]"));
+          // d3.selectAll("input[type=checkbox]").on("change", this.filter).bind(this, self);
+          d3.selectAll("input[type=checkbox]").each(function(d, i) {
+            d3.select(this).on("change", self.filter.bind(self, d3.select(this).attr("filter-level"), d3.select(this).attr("code"), this));
+          })
+        }).bind(this)
+      });
+
+      console.log(this.controls.selectAll("input[type=checkbox]"))
+      // d3.selectAll("input[type=checkbox]").on("change", this.filter);
+
       this.endTime = d3.max(data, function(d) {
         return d.timeEnd;
       })
@@ -192,24 +218,6 @@ class Timeline {
                 return $greyLighter;
               })
               .attr("stroke-width", "1.5px")
-              // .on("mouseover", mouseover)
-              // .on("mousemove", mousemove)
-              // .on("mouseleave", mouseleave)
-
-      // var zoom = d3.zoom()
-      //   .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
-      //   .extent([[0, 0], [this.#width, this.#height]])
-      //   .on("zoom", this.update.bind(this));
-
-
-
-      // this.svg.append("rect")
-      //   .attr("width", this.#width)
-      //   .attr("height", this.#height)
-      //   .style("fill", "none")
-      //   .style("pointer-events", "all")
-      //   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      //   .call(zoom);
 
       if (!SVGElement.prototype.contains) {
         SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
@@ -286,7 +294,6 @@ class Timeline {
       this.xAxis = d3.axisBottom()
           .scale(this.xScale);
 
-
       this.domXAxis = this.svg.append("g")
           .attr("class", "axis axis--x")
           .attr("transform", "translate(40, 0)")
@@ -349,16 +356,11 @@ class Timeline {
   update() {
 
     var newX = d3.event.transform.rescaleX(x);
-    console.log(this)
-    // update axes with these new boundaries
-    // this.domXAxis = d3.event.transform.rescaleX(x2)
 
     this.xScale = d3.event.transform.rescaleX(this.x2)
 
     this.xAxis.scale(this.xScale);
     this.domXAxis.call(this.xAxis);
-
-    // update circle position
 
     this.bars
       .attr("x1", (function(d, i) {
@@ -367,6 +369,50 @@ class Timeline {
       .attr("x2", (function(d, i) {
         return this.XPosition(d, i)
       }).bind(this))
+  }
+
+  filter(level, type, sender) {
+
+    if (d3.select(sender).attr("checked") === "checked") {
+      d3.select(sender).attr("checked", "false")
+    } else if (d3.select(sender).attr("checked") === "false") {
+      d3.select(sender).attr("checked", "checked")
+    }
+
+    var o = d3.select(sender).attr("checked") === "false" ? "none" : "inline"
+    console.log(o)
+    if (level === "inference_type") {
+      this.bars
+        .each(function(d) {
+          if (d.code[3] === type) {
+            d3.select(this)
+            .attr("display", o)
+          }
+        })
+    } else if (level === "inference_sub_type") {
+      this.bars
+        .each(function(d) {
+          if ((d.code[4]).includes(type)) {
+            d3.select(this)
+            .attr("display", o)
+          }
+        })
+    } else if (level === "code_type") {
+      this.bars
+        .each(function(d) {
+          if ((d.code[2].includes(type))) {
+            d3.select(this)
+            .attr("display", o)
+          }
+
+        })
+    }
+
+    // console.log(this)
+    console.log(level)
+    console.log(type)
+    // console.log(checked)
+    // console.log(sender)
   }
 
   changeXScale() {
@@ -426,7 +472,7 @@ var parseTime = d3.timeParse("%H:%M:%S");
 
 var fileNames = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "s1", "s4", "s5", "s6", "s7", "s8"]
 
-for (var i = 1; i < fileNames.length; i++) {
+for (var i = 1; i < 2; i++) {
   var timeline = new Timeline({
     filename: fileNames[i],
     container: ".timeline-view"
