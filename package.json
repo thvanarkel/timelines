@@ -45,18 +45,20 @@
     }
   },
   "dependencies": {
+    "@popperjs/core": "^2.0.6",
     "bulma": "^0.8.0",
-    "d3": "^5.12.0",
+    "d3": "^5.15.0",
+    "d3-array": "^2.4.0",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "^3.4.1",
-    "popper.js": "^1.15.0"
+    "popper.js": "^1.16.1"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.45",
-    "@electron-forge/maker-deb": "^6.0.0-beta.45",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.45",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.45",
-    "@electron-forge/maker-zip": "^6.0.0-beta.45",
+    "@electron-forge/cli": "^6.0.0-beta.49",
+    "@electron-forge/maker-deb": "^6.0.0-beta.49",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.49",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.49",
+    "@electron-forge/maker-zip": "^6.0.0-beta.49",
     "electron": "6.0.12"
   }
 }
